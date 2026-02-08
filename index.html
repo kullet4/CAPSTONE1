@@ -3,49 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade School Quest</title>
+    <title>Digitizing Instructional Materials: E-LMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500&display=swap" rel="stylesheet">
     
+    <head>
     <style>
-        body { background-color: #f0f8ff; font-family: 'Quicksand', sans-serif; }
-        h1 { font-family: 'Fredoka One', cursive; color: #ff6347; }
-        .game-card {
-            border-radius: 20px;
-            border: 4px solid #48cae4;
-            background-color: white;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-        /* Fix for mobile view padding */
-        .container { padding-bottom: 100px; }
+        body { background-color: #f0f8ff; font-family: 'Quicksand', sans-serif; transition: background 0.3s; }
+        
+        /* ... existing styles like .game-card ... */
+
+        /* PASTE THE NEW THEMES HERE */
+        /* Student Theme - Adventure Green */
+        .theme-student .badge-role { background-color: #22c55e !important; }
+
+        /* Teacher Theme - Professional Blue */
+        .theme-teacher { background-color: #f8fafc !important; }
+        .theme-teacher .badge-role { background-color: #0d6efd !important; }
+
+        /* Parent Theme - Information Purple (New Distinction!) */
+        .theme-parent { background-color: #fdfaff !important; }
+        .theme-parent .badge-role { background-color: #8b5cf6 !important; }
+        .theme-parent h1 { color: #8b5cf6 !important; }
     </style>
 </head>
-<body> <div class="container py-4">
-    <div class="text-center mb-4">
-        <h1>🌟 MY ADVENTURE 🌟</h1>
-        <p>Student: <strong>Hero Explorer</strong> | Level: <span id="level">1</span></p>
-    </div>
+</head>
+<body> 
 
-    <div class="row mb-4">
-        <div class="col">
-            <div class="bg-white p-3 rounded-pill shadow-sm border text-center">
-                <strong>XP: <span id="xp-text">0</span> / 100</strong>
-                <div class="progress mt-2" style="height: 15px; border-radius: 10px;">
-                    <div id="xp-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 0%"></div>
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <p id="user-display" class="badge-role badge fs-6 rounded-pill px-3">Detecting User...</p>
+        
+        <h1>🌟 MY ADVENTURE 🌟</h1>
+        <p>Level: <span id="level">1</span></p>
+    </div>
+    <div id="teacher-tools" class="d-none mb-4">
+    <div class="card teacher-card shadow-sm p-3">
+        <h4 class="text-primary">📋 Teacher Dashboard</h4>
+        <p class="text-muted small">Manage Grade 1-6 Science Handouts</p>
+        
+        <div class="d-grid gap-2 d-md-flex">
+            <button class="btn btn-primary" onclick="uploadHandout()">➕ Upload Handout</button>
+            <button class="btn btn-outline-primary">📝 Create Assessment</button>
+            <button class="btn btn-outline-secondary" onclick="viewXP()">📊 View Student XP</button>
+        </div>
+        
+    </div>
+</div>
+
+    <div id="student-area" class="d-none">
+        <div class="row mb-4">
+            <div class="col">
+                <div class="bg-white p-3 rounded-pill shadow-sm border text-center">
+                    <strong>XP: <span id="xp-text">0</span> / 100</strong>
+                    <div class="progress mt-2" style="height: 15px; border-radius: 10px;">
+                        <div id="xp-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card game-card shadow mb-3">
-        <div class="card-body">
-            <h4 class="mb-0">🌳 Mission: Living Things</h4>
-            <p class="mt-2 text-muted">Science - Unit 1 (Grade 1 Handout)</p>
-            <button class="btn btn-lg btn-primary w-100 rounded-pill shadow" 
-        data-bs-toggle="modal" 
-        data-bs-target="#quizModal" 
-        onclick="loadQuestion()"> START QUIZ
-        </button>
+        <div class="card game-card shadow mb-3">
+            <div class="card-body">
+                <h4 class="mb-0">🌳 Mission: Living Things</h4>
+                <p class="mt-2 text-muted">Science - Unit 1 (Digitized Handout)</p>
+                <button class="btn btn-lg btn-primary w-100 rounded-pill shadow" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#quizModal" 
+                    onclick="loadQuestion()"> START QUIZ
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -81,6 +108,12 @@
     </a>
   </div>
 </nav>
+
+<div class="fixed-top p-2 text-end" style="pointer-events: none;">
+    <button onclick="toggleRole()" class="btn btn-sm btn-dark opacity-50 shadow-sm" style="pointer-events: auto;">
+        🔄 Switch Role (Demo)
+    </button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
