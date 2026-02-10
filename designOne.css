@@ -1,0 +1,132 @@
+/* --- Global Styles --- */
+:root {
+    --student-main: #22c55e;
+    --teacher-main: #0d6efd;
+    --parent-main: #8b5cf6;
+    --xp-yellow: #fbbf24;
+}
+
+body { 
+    transition: background-color 0.4s ease, color 0.4s ease;
+    
+}
+
+/* --- Typography & Branding --- */
+h1 { font-family: 'Fredoka One', cursive; letter-spacing: 1px; }
+
+.created-by {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: -10px;
+}
+
+/* --- Professional Badge System --- */
+.badge-role { 
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+/* --- Card Design (Duolingo Style) --- */
+.game-card { 
+    border-radius: 24px; 
+    border: 2px solid #e2e8f0; 
+    border-bottom: 6px solid #e2e8f0; /* Adds the "3D" button look */
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.game-card:active {
+    transform: translateY(4px);
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+    background: white;
+    padding: 20px;
+    border-radius: 50px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+#xp-bar {
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-bottom: 4px solid #0056b3;
+    border-radius: 15px;
+    font-weight: bold;
+    padding: 12px;
+}
+
+.btn-primary:active {
+    transform: translateY(2px);
+    border-bottom: 0px;
+}
+
+/* --- Navbar (Floating Style) --- */
+.navbar {
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+.nav-link { font-weight: 600; font-size: 0.9rem; }
+
+/* --- THEMES --- */
+
+/* Student Theme */
+.theme-student .badge-role { background-color: var(--student-main) !important; }
+.theme-student h1 { color: var(--student-main); }
+.theme-student .game-card { border-color: #dcfce7; border-bottom-color: #22c55e; }
+
+/* Teacher Theme */
+.theme-teacher { background-color: #f1f5f9 !important; }
+.theme-teacher .badge-role { background-color: var(--teacher-main) !important; }
+.theme-teacher .card { border-radius: 20px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+/* Parent Theme */
+.theme-parent { background-color: #f5f3ff !important; }
+.theme-parent .badge-role { background-color: var(--parent-main) !important; }
+.theme-parent h1 { color: var(--parent-main); }
+
+/* --- Demo Toggler Fix --- */
+.demo-btn {
+    border-radius: 10px;
+    font-size: 11px;
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* --- Dark Mode Variables --- */
+body.dark-mode {
+    background-color: #0f172a !important; /* Deep Midnight Blue */
+    color: #f1f5f9;
+}
+
+.dark-mode .game-card, 
+.dark-mode .card, 
+.dark-mode .progress-container,
+.dark-mode .navbar {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9;
+}
+
+.dark-mode .text-muted { color: #94a3b8 !important; }
+
+/* Modal adjustment for Dark Mode */
+.dark-mode .modal-content {
+    
+    background-color: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+}
