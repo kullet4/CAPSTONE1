@@ -6,8 +6,8 @@ let correctCount = 0; // Tracks session score
 // --- SOUND EFFECTS ---
 const sfx = {
     correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'),
-    levelUp: new Audio('assets\audio\correct_answer_sfx.wav'),
-    levelComplete: new Audio('assets\audio\module_complete.wav')
+    levelUp: new Audio('assets/audio/correct_answer_sfx.wav'),
+    levelComplete: new Audio('assets/module_complete.wav')
 };
 
 // --- DATA BANK (GRADES 1-6) ---
