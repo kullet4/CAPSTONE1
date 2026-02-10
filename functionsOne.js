@@ -1,4 +1,16 @@
-// --- DATA BANK (4 Questions per Grade) ---
+// --- STATE ---
+const currentUser = { role: 'student', name: 'Hero Explorer', gradeLevel: 1 };
+let xp = 0, level = 1, currentQuestionIndex = 0, activeModule = [];
+let correctCount = 0; // Tracks session score
+
+// --- SOUND EFFECTS ---
+const sfx = {
+    correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'),
+    levelUp: new Audio('level_up.wav'),
+    levelComplete: new Audio('level_up_sfx.wav')
+};
+
+// --- DATA BANK (GRADES 1-6) ---
 const digitizedModules = {
     grade1: { 
         title: "🌳 Mission: Living Things", 
@@ -56,65 +68,179 @@ const digitizedModules = {
     }
 };
 
-let currentGrade = 'grade1';
-let questionIndex = 0;
-let xp = 0;
-let level = 1;
-let correctAnswersCount = 0; // Track score for summary
+// --- INITIALIZE SYSTEM ---
+document.addEventListener('DOMContentLoaded', () => initELMS());
 
-function loadQuestion() {
-    const module = digitizedModules[currentGrade];
-    const q = module.questions[questionIndex];
-    document.getElementById('question-text').innerText = q.question;
-    const optionsDiv = document.getElementById('options-container');
-    optionsDiv.innerHTML = '';
-    
-    q.options.forEach((opt, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-outline-primary w-100 mb-2 p-3 text-start';
-        btn.innerText = opt;
-        btn.onclick = () => checkAnswer(i);
-        optionsDiv.appendChild(btn);
-    });
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
-function checkAnswer(selected) {
-    const q = digitizedModules[currentGrade].questions[questionIndex];
-    if (selected === q.correctIndex) {
-        xp += 25;
-        correctAnswersCount++;
-        alert("Correct! 🎉 +25 XP");
-    } else {
-        alert("Oops! ❌ Try again on the next one.");
-    }
+function initELMS() {
+    const body = document.body;
+    body.classList.remove('theme-student', 'theme-teacher', 'theme-parent');
+    
+    const userDisplay = document.getElementById('user-display');
+    if(userDisplay) userDisplay.innerText = `Logged in as: ${currentUser.name} (${currentUser.role})`;
 
-    questionIndex++;
-    if (questionIndex < digitizedModules[currentGrade].questions.length) {
-        loadQuestion();
+    const gradeData = digitizedModules[`grade${currentUser.gradeLevel}`];
+    activeModule = [...gradeData.questions]; 
+    currentQuestionIndex = 0;
+    correctCount = 0;
+
+    // Use getElementById for the specific mission title
+    const missionTitle = document.getElementById('mission-title');
+    if (missionTitle) missionTitle.innerText = gradeData.title;
+
+    const teacherTools = document.getElementById('teacher-tools');
+    const studentArea = document.getElementById('student-area');
+
+    if (currentUser.role === 'teacher') {
+        body.classList.add('theme-teacher');
+        if(teacherTools) teacherTools.classList.remove('d-none');
+        if(studentArea) studentArea.classList.add('d-none');
+    } else if (currentUser.role === 'parent') {
+        body.classList.add('theme-parent');
+        if(studentArea) studentArea.classList.remove('d-none');
+        if(teacherTools) teacherTools.classList.add('d-none');
     } else {
-        showSummary();
+        body.classList.add('theme-student');
+        if(studentArea) studentArea.classList.remove('d-none');
+        if(teacherTools) teacherTools.classList.add('d-none');
     }
     updateUI();
 }
 
-function showSummary() {
-    const total = digitizedModules[currentGrade].questions.length;
-    alert(`Mission Complete! 🎖️\nScore: ${correctAnswersCount} / ${total}\nKeep it up, Explorer!`);
+// --- TEACHER ACTIONS ---
+function setGrade(newLevel) {
+    currentUser.gradeLevel = newLevel;
+    initELMS();
+    Swal.fire({
+        title: `Grade ${newLevel} Content Loaded`,
+        icon: 'info',
+        toast: true,
+        position: 'top-end',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+
+function toggleRole() {
+    if (currentUser.role === 'student') { 
+        currentUser.role = 'teacher'; 
+        currentUser.name = 'Teacher Maria'; 
+    } else if (currentUser.role === 'teacher') { 
+        currentUser.role = 'parent'; 
+        currentUser.name = 'Parent/Guardian'; 
+    } else { 
+        currentUser.role = 'student'; 
+        currentUser.name = 'Hero Explorer'; 
+    }
+    initELMS();
+}
+
+// --- GAME LOGIC ---
+function loadQuestion() {
+    let q = activeModule[currentQuestionIndex];
+    const qText = document.getElementById('question-text');
+    const container = document.getElementById('options-container');
+
+    if (!qText || !container) return;
+
+    qText.innerText = q.question;
+    container.innerHTML = '';
     
-    // Reset for next time
-    questionIndex = 0;
-    correctAnswersCount = 0;
-    // Switch back to main view (pseudo-code, ensure your HTML IDs match)
-    document.getElementById('quiz-section').classList.add('d-none');
-    document.getElementById('dashboard-section').classList.remove('d-none');
+    q.options.forEach((opt, idx) => {
+        container.innerHTML += `<button onclick="checkAnswer(${idx})" class="btn btn-outline-secondary rounded-pill mb-2 w-100 p-3">${opt}</button>`;
+    });
+}
+
+function checkAnswer(selectedIndex) {
+    let q = activeModule[currentQuestionIndex];
+    
+    if (selectedIndex === q.correctIndex) {
+        sfx.correct.play().catch(e => console.log("Sound error:", e));
+        correctCount++;
+        
+        // Correct XP logic: Only add if answer is right
+        xp += 25; 
+        updateUI();
+
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 40, spread: 55, origin: { x: 0.5, y: 0.5 } });
+        }
+
+        Swal.fire({
+            title: 'Great job! 🌟',
+            icon: 'success',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1000
+        }).then(() => processNext());
+    } else {
+        Swal.fire({ 
+            title: 'Oops! ❌', 
+            text: 'Try again, Explorer!', 
+            icon: 'error',
+            timer: 1500,
+            showConfirmButton: false
+        }).then(() => processNext());
+    }
+}
+
+function processNext() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < activeModule.length) {
+        loadQuestion();
+    } else {
+        finishMission();
+    }
 }
 
 function updateUI() {
-    if (xp >= 100) {
-        level++;
-        xp = 0;
-        alert("LEVEL UP! 🌟 You are now Level " + level);
-    }
-    document.getElementById('xp-bar').style.width = xp + "%";
-    document.getElementById('level-display').innerText = "Level " + level;
+    const xpBar = document.getElementById('xp-bar');
+    const xpText = document.getElementById('xp-text');
+    const levelText = document.getElementById('level');
+
+    if(xpBar) xpBar.style.width = Math.min(xp, 100) + '%';
+    if(xpText) xpText.innerText = xp;
+    if(levelText) levelText.innerText = level;
+
+    if (xp >= 100) { levelUp(); }
+}
+
+function levelUp() {
+    level++;
+    xp = 0;
+    sfx.levelUp.play().catch(e => console.log("SFX error:", e));
+    updateUI();
+    Swal.fire({
+        title: '🎉 LEVEL UP!',
+        text: `You are now Level ${level}`,
+        icon: 'success'
+    });
+}
+
+function finishMission() {
+    sfx.levelComplete.play().catch(e => console.log("SFX error:", e));
+    Swal.fire({
+        title: '🏁 Mission Complete!',
+        html: `You finished the module!<br><h3>Score: ${correctCount} / 4</h3>`,
+        icon: 'success'
+    }).then(() => {
+        const modalEl = document.getElementById('quizModal');
+        if(modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+        initELMS(); 
+    });
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
 }
