@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/designOne.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
@@ -376,6 +375,38 @@
     let currentUser;
     let currentAssessmentId = null;
 
+    // --- SFX / Audio ---
+    const sfx = {
+        correct: new Audio('assets/correct_answer_sfx.wav'),
+        levelUp: new Audio('assets/game_level_completed_sfx.wav'),
+        moduleComplete: new Audio('assets/module_complete.wav'),
+        click: new Audio('https://assets.mixkit.co/active_storage/sfx/preview/mixkit-small-button-click-1113.wav')
+    };
+    // Preload local assets (browsers may still defer until user interaction)
+    Object.values(sfx).forEach(a => { try { a.preload = 'auto'; a.volume = 0.75; } catch(e){} });
+
+    // Fire confetti from the sides of a given element (modal)
+    function fireSideConfetti(el, opts = {}) {
+        if (!el) {
+            // fallback to center bursts
+            confetti({ particleCount: opts.particleCount || 100, spread: opts.spread || 70 });
+            return;
+        }
+        const rect = el.getBoundingClientRect();
+        const y = (rect.top + rect.height * 0.5) / window.innerHeight;
+        const leftOriginX = Math.max((rect.left + 8) / window.innerWidth, 0.02);
+        const rightOriginX = Math.min((rect.right - 8) / window.innerWidth, 0.98);
+
+        const colors = opts.colors || ['#ffd700', '#ff7a00', '#22c55e', '#0d6efd', '#a78bfa'];
+
+        // left burst
+        confetti({ particleCount: opts.particleCount || 60, spread: opts.spread || 55, origin: { x: leftOriginX, y }, colors });
+        // right burst shortly after
+        setTimeout(() => {
+            confetti({ particleCount: opts.particleCount || 60, spread: opts.spread || 55, origin: { x: rightOriginX, y }, colors });
+        }, 120);
+    }
+
     // Initialize dashboard
     document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
@@ -547,6 +578,7 @@
     }
 
     function startAssessment(assessmentId) {
+        try { sfx.click.currentTime = 0; sfx.click.play(); } catch (e) {}
         currentAssessmentId = assessmentId;
         const assessment = DB.getAssessment(assessmentId);
 
@@ -601,14 +633,23 @@
             return;
         }
 
-        // Record score
+        // Record score and detect level changes
+        const prevPerf = DB.getStudentPerformance(currentUser.id) || { level: 1, xp: 0 };
         DB.recordAssessmentScore(currentUser.id, currentAssessmentId, score, assessment.questions.length);
+        const updatedPerf = DB.getStudentPerformance(currentUser.id) || { level: 1, xp: 0 };
 
-        // Show result
+        // Determine which SFX to play
+        if (updatedPerf.level > prevPerf.level) {
+            try { sfx.levelUp.currentTime = 0; sfx.levelUp.play(); } catch(e){}
+        } else {
+            try { sfx.correct.currentTime = 0; sfx.correct.play(); } catch(e){}
+        }
+
+        // Show result with confetti from modal sides
         const percentage = (score / assessment.questions.length) * 100;
         const itemMultiplier = Math.ceil(score / assessment.questions.length * 10);
-        
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        const modalContent = document.querySelector('#assessmentModal .modal-content');
+        fireSideConfetti(modalContent, { particleCount: 100, spread: 70 });
 
         Swal.fire({
             title: 'Assessment Complete!',
