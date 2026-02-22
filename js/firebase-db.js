@@ -3,6 +3,8 @@
 
 let firebaseDb = null;
 let firebaseAuth = null;
+let firebaseInitialized = false;
+
 const firebaseConfig = {
     apiKey: "AIzaSyCYTvW2j5E4J4Dxoo5XadeSlnutOWVZOag",
     authDomain: "capstone1-demo-8293c.firebaseapp.com",
@@ -15,34 +17,60 @@ const firebaseConfig = {
 
 // Initialize Firebase
 async function initializeFirebase() {
+    if (firebaseInitialized) return;
+    
     try {
         const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js');
-        const { getFirestore } = await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js');
+        const { getFirestore, enableIndexedDbPersistence } = await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js');
         const { getAuth } = await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js');
 
         const app = initializeApp(firebaseConfig);
         firebaseDb = getFirestore(app);
         firebaseAuth = getAuth(app);
+        
+        // Enable offline persistence
+        try {
+            await enableIndexedDbPersistence(firebaseDb);
+            console.log('✅ Firebase offline persistence enabled');
+        } catch (err) {
+            if (err.code === 'failed-precondition') {
+                console.warn('⚠️ Multiple tabs open - persistence disabled');
+            } else if (err.code === 'unimplemented') {
+                console.warn('⚠️ Browser doesn\'t support persistence');
+            }
+        }
+        
+        firebaseInitialized = true;
         console.log('✅ Firebase initialized successfully');
+        
+        // Load data from Firebase on init
+        await loadFromFirebase();
         
         // Start syncing data
         startFirebaseSync();
     } catch (error) {
         console.error('❌ Firebase initialization error:', error);
-        console.log('Using localStorage fallback...');
+        console.log('⚠️ Using localStorage fallback (offline mode)');
+        firebaseDb = null;
     }
 }
 
 // Sync localStorage to Firestore
 async function syncToFirebase(collectionName, docId, data) {
-    if (!firebaseDb) return;
+    if (!firebaseDb) {
+        console.warn('⚠️ Firebase not initialized - using localStorage only');
+        return false;
+    }
     
     try {
         const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js');
         const docRef = doc(firebaseDb, collectionName, docId);
         await setDoc(docRef, data, { merge: true });
+        console.log(`✅ Synced ${collectionName}/${docId} to Firebase`);
+        return true;
     } catch (error) {
-        console.warn('⚠️ Firebase sync failed, using localStorage:', error.message);
+        console.warn(`⚠️ Firebase sync failed for ${collectionName}/${docId}:`, error.message);
+        return false;
     }
 }
 
@@ -50,23 +78,32 @@ async function syncToFirebase(collectionName, docId, data) {
 async function startFirebaseSync() {
     if (!firebaseDb) return;
     
-    // Get all data from localStorage
-    const users = JSON.parse(localStorage.getItem('elms_users') || '{}');
-    const assessments = JSON.parse(localStorage.getItem('elms_assessments') || '{}');
-    const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
-    const materials = JSON.parse(localStorage.getItem('elms_materials') || '{}');
-    const policies = JSON.parse(localStorage.getItem('elms_policies') || '{}');
-    const attendance = JSON.parse(localStorage.getItem('elms_attendance') || '{}');
-    const performance = JSON.parse(localStorage.getItem('elms_performance') || '{}');
+    try {
+        // Get all data from localStorage
+        const users = JSON.parse(localStorage.getItem('elms_users') || '{}');
+        const assessments = JSON.parse(localStorage.getItem('elms_assessments') || '{}');
+        const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
+        const materials = JSON.parse(localStorage.getItem('elms_materials') || '{}');
+        const policies = JSON.parse(localStorage.getItem('elms_policies') || '{}');
+        const attendance = JSON.parse(localStorage.getItem('elms_attendance') || '{}');
+        const performance = JSON.parse(localStorage.getItem('elms_performance') || '{}');
 
-    // Sync each collection
-    await syncToFirebase('_backup', 'users', { data: users, updatedAt: new Date() });
-    await syncToFirebase('_backup', 'assessments', { data: assessments, updatedAt: new Date() });
-    await syncToFirebase('_backup', 'classes', { data: classes, updatedAt: new Date() });
-    await syncToFirebase('_backup', 'materials', { data: materials, updatedAt: new Date() });
-    await syncToFirebase('_backup', 'policies', { data: policies, updatedAt: new Date() });
-    await syncToFirebase('_backup', 'attendance', { data: attendance, updatedAt: new Date() });
-    await syncToFirebase('_backup', 'performance', { data: performance, updatedAt: new Date() });
+        // Sync each collection
+        const timestamp = new Date().toISOString();
+        await Promise.all([
+            syncToFirebase('_backup', 'users', { data: users, updatedAt: timestamp }),
+            syncToFirebase('_backup', 'assessments', { data: assessments, updatedAt: timestamp }),
+            syncToFirebase('_backup', 'classes', { data: classes, updatedAt: timestamp }),
+            syncToFirebase('_backup', 'materials', { data: materials, updatedAt: timestamp }),
+            syncToFirebase('_backup', 'policies', { data: policies, updatedAt: timestamp }),
+            syncToFirebase('_backup', 'attendance', { data: attendance, updatedAt: timestamp }),
+            syncToFirebase('_backup', 'performance', { data: performance, updatedAt: timestamp })
+        ]);
+        
+        console.log('✅ All data synced to Firebase');
+    } catch (error) {
+        console.error('❌ Sync error:', error);
+    }
 }
 
 // Override localStorage setItem to auto-sync
@@ -89,7 +126,10 @@ localStorage.setItem = function(key, value) {
 
 // Load data from Firebase if available
 async function loadFromFirebase() {
-    if (!firebaseDb) return false;
+    if (!firebaseDb) {
+        console.log('ℹ️ Firebase not available, using localStorage');
+        return false;
+    }
     
     try {
         const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js');
@@ -98,21 +138,28 @@ async function loadFromFirebase() {
         let dataLoaded = false;
 
         for (const collection of collections) {
-            const docRef = doc(firebaseDb, '_backup', collection);
-            const docSnap = await getDoc(docRef);
-            
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if (data && data.data) {
-                    localStorage.setItem(`elms_${collection}`, JSON.stringify(data.data));
-                    dataLoaded = true;
+            try {
+                const docRef = doc(firebaseDb, '_backup', collection);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.data && Object.keys(data.data).length > 0) {
+                        localStorage.setItem(`elms_${collection}`, JSON.stringify(data.data));
+                        dataLoaded = true;
+                        console.log(`✅ Loaded ${collection} from Firebase`);
+                    }
                 }
+            } catch (err) {
+                console.warn(`⚠️ Could not load ${collection}:`, err.message);
             }
         }
 
         if (dataLoaded) {
-            console.log('✅ Data loaded from Firebase');
+            console.log('✅ Cloud data loaded successfully');
             return true;
+        } else {
+            console.log('ℹ️ No cloud data found, using local data');
         }
     } catch (error) {
         console.warn('⚠️ Could not load from Firebase:', error.message);
@@ -122,13 +169,13 @@ async function loadFromFirebase() {
 }
 
 // Initialize Firebase on page load
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     initializeFirebase();
 });
 
 // Periodically sync every 30 seconds
 setInterval(() => {
-    if (firebaseDb) {
+    if (firebaseDb && firebaseInitialized) {
         startFirebaseSync();
     }
 }, 30000);
@@ -138,5 +185,13 @@ window.FIREBASE_SYNC = {
     init: initializeFirebase,
     sync: startFirebaseSync,
     load: loadFromFirebase,
-    isReady: () => firebaseDb !== null
+    isReady: () => firebaseDb !== null,
+    getStatus: () => ({
+        initialized: firebaseInitialized,
+        connected: firebaseDb !== null,
+        message: firebaseDb ? '🟢 Connected to Firebase' : '🟡 Using localStorage (offline mode)'
+    })
 };
+
+// Log initial status
+console.log('%c🌐 QuizKo eLMS Firebase Sync Started', 'color: #667eea; font-weight: bold; font-size: 14px');
