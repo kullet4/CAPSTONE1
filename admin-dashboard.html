@@ -14,6 +14,7 @@
         .btn-primary { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; border: none; }
         .badge-warning { background: #f59e0b; }
         .progress-bar { background: #f59e0b !important; }
+        .avatar-btn.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: white; border-color: #d97706 !important; }
     </style>
 </head>
 <body>
@@ -298,6 +299,15 @@
                         <label class="form-label">Password</label>
                         <input type="password" class="form-control" id="teacher-password" value="teacher123">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Avatar</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('👩‍🏫')" data-avatar="👩‍🏫">👩‍🏫</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('👨‍🏫')" data-avatar="👨‍🏫">👨‍🏫</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('🧑‍🏫')" data-avatar="🧑‍🏫">🧑‍🏫</button>
+                        </div>
+                        <input type="hidden" id="teacher-avatar" value="👨‍🏫">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -438,6 +448,16 @@
         }
         currentUser = user;
         document.getElementById('user-name').innerText = user.name;
+    }
+
+    function selectAvatar(avatar) {
+        document.getElementById('teacher-avatar').value = avatar;
+        document.querySelectorAll('.avatar-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-avatar') === avatar) {
+                btn.classList.add('active');
+            }
+        });
     }
 
     function loadDashboardData() {
@@ -597,6 +617,7 @@
         const email = document.getElementById('teacher-email').value;
         const grade = parseInt(document.getElementById('teacher-grade').value);
         const password = document.getElementById('teacher-password').value;
+        const avatar = document.getElementById('teacher-avatar').value;
 
         DB.addUser(email, {
             name,
@@ -604,11 +625,20 @@
             password,
             role: 'teacher',
             gradeLevel: grade,
-            avatar: '👨‍🏫'
+            avatar
         });
 
         Swal.fire('Success', 'Teacher added successfully!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('addTeacherModal')).hide();
+        
+        // Reset form
+        document.getElementById('teacher-name').value = '';
+        document.getElementById('teacher-email').value = '';
+        document.getElementById('teacher-grade').value = '';
+        document.getElementById('teacher-password').value = 'teacher123';
+        document.getElementById('teacher-avatar').value = '👨‍🏫';
+        document.querySelectorAll('.avatar-btn').forEach(btn => btn.classList.remove('active'));
+        
         loadDashboardData();
     }
 

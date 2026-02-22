@@ -123,7 +123,7 @@
                                         <tr>
                                             <th>Title</th>
                                             <th>Questions</th>
-                                            <th>Created</th>
+                                            <th>Due Date</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -289,6 +289,10 @@
                             <input type="number" class="form-control" id="new-assessment-time" value="30" min="5">
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="new-assessment-duedate">
+                    </div>
 
                     <h6 class="fw-bold mb-2">Questions</h6>
                     <div id="questions-container">
@@ -350,6 +354,10 @@
                             <label class="form-label">Time Limit (minutes)</label>
                             <input type="number" class="form-control" id="edit-assessment-time" value="30" min="5">
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="edit-assessment-duedate">
                     </div>
 
                     <h6 class="fw-bold mb-2">Questions</h6>
@@ -497,11 +505,14 @@
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No assessments created yet</td></tr>';
             return;
         }
-        tbody.innerHTML = assessments.map(a => `
+        tbody.innerHTML = assessments.map(a => {
+            const dueDate = a.dueDate ? new Date(a.dueDate).toLocaleDateString() : 'No due date';
+            const dueDateColor = a.dueDate && new Date(a.dueDate) < new Date() ? 'text-danger' : '';
+            return `
             <tr>
                 <td><strong>${a.title}</strong></td>
                 <td>${a.questions.length} questions</td>
-                <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+                <td class="${dueDateColor}"><i class="bi bi-calendar"></i> ${dueDate}</td>
                 <td><span class="badge bg-success">Active</span></td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary" onclick="editAssessment('${a.id}')">
@@ -512,7 +523,8 @@
                     </button>
                 </td>
             </tr>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function loadTemplates(templates) {
@@ -687,6 +699,7 @@
         const description = document.getElementById('new-assessment-desc').value;
         const subject = document.getElementById('new-assessment-subject').value;
         const timeLimit = parseInt(document.getElementById('new-assessment-time').value);
+        const dueDate = document.getElementById('new-assessment-duedate').value;
 
         const questionItems = document.querySelectorAll('.question-item');
         const questions = [];
@@ -718,7 +731,8 @@
             questions,
             createdBy: currentUser.id,
             isTemplate: false,
-            timeLimit
+            timeLimit,
+            dueDate: dueDate || null
         });
 
         Swal.fire('Success', 'Assessment created successfully!', 'success');
@@ -739,6 +753,7 @@
         document.getElementById('edit-assessment-desc').value = assessment.description || '';
         document.getElementById('edit-assessment-subject').value = assessment.subject;
         document.getElementById('edit-assessment-time').value = assessment.timeLimit || 30;
+        document.getElementById('edit-assessment-duedate').value = assessment.dueDate || '';
 
         // Populate questions
         const container = document.getElementById('edit-questions-container');
@@ -806,6 +821,7 @@
         const description = document.getElementById('edit-assessment-desc').value;
         const subject = document.getElementById('edit-assessment-subject').value;
         const timeLimit = parseInt(document.getElementById('edit-assessment-time').value);
+        const dueDate = document.getElementById('edit-assessment-duedate').value;
 
         const questionItems = document.querySelectorAll('#edit-questions-container .question-item');
         const questions = [];
@@ -836,7 +852,8 @@
             description,
             subject,
             questions,
-            timeLimit
+            timeLimit,
+            dueDate: dueDate || null
         });
 
         Swal.fire('Success', 'Assessment updated successfully!', 'success');
