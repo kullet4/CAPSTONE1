@@ -221,6 +221,8 @@
             </div>
         </section>
 
+                    
+
     </div>
 </div>
 
@@ -389,6 +391,7 @@
             </div>
             <form onsubmit="addMaterial(event)">
                 <div class="modal-body">
+                    <input type="hidden" id="editing-material-id" value="">
                     <div class="mb-3">
                         <label class="form-label">Material Title</label>
                         <input type="text" class="form-control" id="material-title" required>
@@ -877,23 +880,55 @@
 
     function addMaterial(event) {
         event.preventDefault();
+        const editingId = document.getElementById('editing-material-id').value;
         const title = document.getElementById('material-title').value;
         const subject = document.getElementById('material-subject').value;
         const type = document.getElementById('material-type').value;
         const content = document.getElementById('material-content').value;
 
-        DB.createMaterial({
-            title,
-            subject,
-            gradeLevel: currentUser.gradeLevel,
-            type,
-            content,
-            createdBy: currentUser.id
-        });
+        if (editingId) {
+            // Update existing material
+            const materials = JSON.parse(localStorage.getItem('elms_materials') || '{}');
+            if (materials[editingId]) {
+                materials[editingId] = { ...materials[editingId], title, subject, type, content };
+                localStorage.setItem('elms_materials', JSON.stringify(materials));
+                Swal.fire('Success', 'Material updated successfully!', 'success');
+            } else {
+                Swal.fire('Error', 'Material not found', 'error');
+            }
+            document.getElementById('editing-material-id').value = '';
+        } else {
+            DB.createMaterial({
+                title,
+                subject,
+                gradeLevel: currentUser.gradeLevel,
+                type,
+                content,
+                createdBy: currentUser.id
+            });
+            Swal.fire('Success', 'Material added successfully!', 'success');
+        }
 
-        Swal.fire('Success', 'Material added successfully!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('addMaterialModal')).hide();
         loadDashboardData();
+    }
+
+    function editMaterial(id) {
+        const materials = JSON.parse(localStorage.getItem('elms_materials') || '{}');
+        const m = materials[id];
+        if (!m) {
+            Swal.fire('Error', 'Material not found', 'error');
+            return;
+        }
+        // populate modal fields
+        document.getElementById('editing-material-id').value = id;
+        document.getElementById('material-title').value = m.title || '';
+        document.getElementById('material-subject').value = m.subject || '';
+        document.getElementById('material-type').value = m.type || '';
+        document.getElementById('material-content').value = m.content || '';
+        // show modal
+        const modal = new bootstrap.Modal(document.getElementById('addMaterialModal'));
+        modal.show();
     }
 
     function showAttendanceModal() {
