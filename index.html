@@ -3,100 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuizKo</title>
+    <title>Welcome to QuizKo eLMS</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="designOne.css">
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+            animation: slideInUp 0.8s ease-out 0.4s both;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .cta-buttons {
+            margin-top: 40px;
+            animation: slideInUp 0.8s ease-out 0.6s both;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-weight: bold;
+            border-radius: 50px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: #667eea;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
-<body class="theme-student">
+<body>
 
-<div class="container py-4">
-    <div class="text-center mb-4">
-        <p id="user-display" class="badge-role badge fs-6 rounded-pill px-3 mb-2 bg-primary">Detecting User...</p>
-        <h1 class="display-5">🌟 Quiz Ko 🌟</h1>
-        <h5>Hello, Explorer!</h5>
-    </div>
-
-    <div id="teacher-tools" class="d-none mb-4">
-        <div class="card shadow-sm p-4 border-0 rounded-4">
-            <h5 class="fw-bold mb-3">🛠️ Instructor Settings</h5>
-            
-            <label class="fw-bold small mb-2 text-uppercase">🎓 Set Student Grade Level:</label>
-            <div class="btn-group w-100 mb-4 shadow-sm" role="group">
-                <button onclick="setGrade(1)" class="btn btn-outline-primary btn-sm">G1</button>
-                <button onclick="setGrade(2)" class="btn btn-outline-primary btn-sm">G2</button>
-                <button onclick="setGrade(3)" class="btn btn-outline-primary btn-sm">G3</button>
-                <button onclick="setGrade(4)" class="btn btn-outline-primary btn-sm">G4</button>
-                <button onclick="setGrade(5)" class="btn btn-outline-primary btn-sm">G5</button>
-                <button onclick="setGrade(6)" class="btn btn-outline-primary btn-sm">G6</button>
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">🌟 QuizKo 🌟</h1>
+        <p class="hero-subtitle">Interactive Learning Platform for Philippine Elementary Schools</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👨‍💼</div>
+                <div class="feature-title">School Officials</div>
+                <p>Manage students, teachers, materials, and policies with ease</p>
             </div>
-
-            <div class="form-check form-switch pt-3 border-top">
-                <input class="form-check-input" type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-                <label class="form-check-label fw-bold" for="darkModeToggle">🌙 Enable Dark Mode</label>
+            <div class="feature-card">
+                <div class="feature-icon">👩‍🏫</div>
+                <div class="feature-title">Teachers</div>
+                <p>Create assessments, monitor progress, and engage students</p>
             </div>
-        </div>
-    </div>
-
-    <div id="student-area">
-        <div class="progress-container mb-4">
-            <div class="d-flex justify-content-between mb-2">
-                <span class="fw-bold">Level <span id="level">1</span></span>
-                <span class="fw-bold text-warning">⭐ <span id="xp-text">0</span> / 100 XP</span>
+            <div class="feature-card">
+                <div class="feature-icon">👧</div>
+                <div class="feature-title">Students</div>
+                <p>Learn with interactive assessments and track your progress</p>
             </div>
-            <div class="progress" style="height: 14px; border-radius: 10px; background: #e2e8f0;">
-                <div id="xp-bar" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Mobile Friendly</div>
+                <p>Access from any device - desktop, tablet, or mobile</p>
             </div>
-        </div>
-
-        <div class="card game-card shadow-sm">
-            <div class="card-body text-center p-4">
-                <h4 id="mission-title" class="fw-bold">🚀 Mission: Biological Foundations</h4>
-                <p class="text-muted mb-4">Science - Unit 1 (Digitized Handout)</p>
-                <button class="btn btn-lg btn-primary w-100 rounded-pill py-3 fw-bold shadow" 
-                        data-bs-toggle="modal" data-bs-target="#quizModal" onclick="loadQuestion()">
-                    LAUNCH MODULE
-                </button>
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <div class="feature-title">Gamification</div>
+                <p>Earn XP, level up, and unlock achievements</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Analytics</div>
+                <p>Track performance with detailed progress reports</p>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="modal fade" id="quizModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0" style="border-radius: 28px;">
-            <div class="modal-header border-0 pb-0">
-                <h6 class="modal-title fw-bold text-uppercase text-primary">🧠 Knowledge Check</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center p-4 pt-2">
-                <p id="question-text" class="fs-4 fw-bold mb-4">Loading question...</p>
-                <div id="options-container" class="d-grid gap-3"></div>
-            </div>
+        <div class="cta-buttons">
+            <button class="btn btn-primary" onclick="window.location.href='login.html'">
+                <i class="bi bi-box-arrow-in-right"></i> LOGIN NOW
+            </button>
         </div>
     </div>
-</div>
-
-<nav class="navbar fixed-bottom navbar-light bg-white border-top py-2 shadow-lg">
-    <div class="container-fluid d-flex justify-content-around">
-        <a class="nav-link text-center text-primary" href="#"><b>📊 DASHBOARD</b></a>
-        <a class="nav-link text-center text-muted" href="#"><b>📚 CURRICULUM</b></a>
-        <a class="nav-link text-center text-muted" href="#"><b>📈 PROGRESS</b></a>
-    </div>
-</nav>
-
-<div class="fixed-top p-2 text-end">
-    <button onclick="toggleRole()" class="btn btn-sm btn-dark demo-btn shadow-sm">
-        🔄 Switch Role (Demo)
-    </button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="functionsOne.js"></script>
+<script>
+    // Auto redirect if user is already logged in
+    window.addEventListener('DOMContentLoaded', () => {
+        const user = localStorage.getItem('elms_current_user');
+        if (user) {
+            const userData = JSON.parse(user);
+            const roleMap = {
+                'official': 'admin-dashboard.html',
+                'teacher': 'teacher-dashboard.html',
+                'student': 'student-dashboard.html'
+            };
+            if (roleMap[userData.role]) {
+                window.location.href = roleMap[userData.role];
+            }
+        }
+    });
+</script>
 
+</body>
+</html>
 </body>
 </html>

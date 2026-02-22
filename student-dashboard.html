@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - QuizKo eLMS</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/designOne.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .navbar { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important; }
+        .card-header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important; }
+        .btn-primary { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important; border: none; }
+        .badge-success { background: #22c55e; }
+        .progress-bar { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important; }
+
+        .xp-card {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+        }
+
+        .xp-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .xp-bar {
+            height: 25px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.3);
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .xp-progress {
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+
+        .achievement-badge {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 3px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 2rem;
+        }
+
+        .achievement-badge:hover {
+            transform: translateY(-5px);
+            border-color: #22c55e;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.2);
+        }
+
+        .assessment-card {
+            border-left: 5px solid #22c55e;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .assessment-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .material-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 5px solid #22c55e;
+        }
+
+        .material-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.2);
+        }
+
+        .attendance-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .attendance-present {
+            background: #22c55e;
+        }
+
+        .attendance-absent {
+            background: #ef4444;
+        }
+
+        .attendance-late {
+            background: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><i class="bi bi-mortarboard"></i> QuizKo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('assessments')"><i class="bi bi-clipboard-check"></i> Assessments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('materials')"><i class="bi bi-book"></i> Materials</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('grades')"><i class="bi bi-graph-up"></i> Grades</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="user-name"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="login.html">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- HEADER -->
+        <div class="mb-4 animate-slide">
+            <h1 class="mb-1"><i class="bi bi-person-fill"></i> Welcome, <span id="greeting-name">Learner</span>!</h1>
+            <p class="text-muted">Continue your learning journey and unlock new achievements</p>
+        </div>
+
+        <!-- XP & LEVEL SECTION -->
+        <div class="row mb-4 animate-slide">
+            <div class="col-lg-8">
+                <div class="xp-card">
+                    <div>
+                        <small>Current Level</small>
+                        <div class="xp-value" id="level-display">1</div>
+                    </div>
+                    <div class="xp-bar">
+                        <div class="xp-progress" id="xp-progress" style="width: 0%;"></div>
+                    </div>
+                    <small id="xp-text">0 / 500 XP</small>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100" style="border: none; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 15px;">
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-1">Your Rank</p>
+                        <h3 class="fw-bold text-warning mb-2" id="rank-display">Gold</h3>
+                        <p class="small mb-0"><i class="bi bi-star-fill text-warning"></i> Keep learning to advance!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEKLY STATS -->
+        <div class="row mb-4 animate-slide">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-success fw-bold" id="assessments-completed">0</h3>
+                        <p class="text-muted mb-0">Assessments Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="fw-bold" id="attendance-rate">0%</h3>
+                        <p class="text-muted mb-0">Attendance Rate</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="fw-bold text-info" id="avg-grade">0%</h3>
+                        <p class="text-muted mb-0">Average Grade</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACHIEVEMENTS -->
+        <section class="mb-4 animate-slide">
+            <h5 class="fw-bold mb-3"><i class="bi bi-trophy"></i> Achievements</h5>
+            <div class="row">
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <div class="achievement-badge" title="First Assessment">
+                        <span>🎯</span>
+                        <small class="mt-1 text-center">First Quiz</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <div class="achievement-badge" title="Perfect Score">
+                        <span>⭐</span>
+                        <small class="mt-1 text-center">Perfect Score</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <div class="achievement-badge" title="Level 2">
+                        <span>🚀</span>
+                        <small class="mt-1 text-center">Level 2</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2 text-center">
+                    <div class="achievement-badge" title="Perfect Attendance">
+                        <span>📚</span>
+                        <small class="mt-1 text-center">Dedication</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ASSESSMENTS SECTION -->
+        <section id="assessments" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Available Assessments</h5>
+                    <span class="badge bg-success" id="pending-count">0 Pending</span>
+                </div>
+                <div class="card-body">
+                    <div id="assessments-list">
+                        <div class="text-center text-muted py-4">
+                            <p><i class="bi bi-inbox" style="font-size: 3rem;"></i></p>
+                            <p>No assessments assigned yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEARNING MATERIALS SECTION -->
+        <section id="materials" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-book-fill"></i> Learning Materials</h5>
+                </div>
+                <div class="card-body">
+                    <div id="materials-list">
+                        <div class="text-center text-muted py-4">
+                            <p><i class="bi bi-file-text" style="font-size: 3rem;"></i></p>
+                            <p>No materials available yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GRADES & PERFORMANCE -->
+        <section id="grades" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Your Grades</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Assessment</th>
+                                    <th>Date</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grades-list">
+                                <tr><td colspan="5" class="text-center text-muted py-3">No completed assessments yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATTENDANCE SECTION -->
+        <section class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Attendance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="attendance-circle attendance-present">
+                                <span id="attendance-present">0</span>
+                            </div>
+                            <p class="mt-2 text-muted small">Present</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="attendance-circle attendance-absent">
+                                <span id="attendance-absent">0</span>
+                            </div>
+                            <p class="mt-2 text-muted small">Absent</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="attendance-circle attendance-late">
+                                <span id="attendance-late">0</span>
+                            </div>
+                            <p class="mt-2 text-muted small">Late</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Assessment Modal -->
+<div class="modal fade" id="assessmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assessment-title">Assessment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="assessment-content">
+                    <!-- Questions will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitAssessment()">Submit Assessment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script src="js/data.js"></script>
+<script>
+    let currentUser;
+    let currentAssessmentId = null;
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        loadDashboardData();
+    });
+
+    function checkAuth() {
+        const user = JSON.parse(localStorage.getItem('elms_current_user') || 'null');
+        if (!user || user.role !== 'student') {
+            window.location.href = 'login.html';
+            return;
+        }
+        currentUser = user;
+        document.getElementById('user-name').innerText = user.name;
+        document.getElementById('greeting-name').innerText = user.name.split(' ')[0];
+    }
+
+    function loadDashboardData() {
+        const perf = DB.getStudentPerformance(currentUser.id) || {
+            studentId: currentUser.id,
+            xp: 0,
+            level: 1,
+            assessmentScores: [],
+            attendance: { present: 0, absent: 0, late: 0 },
+            completedAssessments: []
+        };
+
+        // Update XP and Level
+        const maxXpForLevel = 500;
+        const xpInCurrentLevel = perf.xp % maxXpForLevel;
+        const progressPercent = (xpInCurrentLevel / maxXpForLevel) * 100;
+        
+        document.getElementById('level-display').innerText = perf.level;
+        document.getElementById('xp-progress').style.width = progressPercent + '%';
+        document.getElementById('xp-text').innerText = `${xpInCurrentLevel} / ${maxXpForLevel} XP`;
+
+        // Update rank
+        const ranks = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond'];
+        const rankIndex = Math.min(Math.floor(perf.level / 2), ranks.length - 1);
+        document.getElementById('rank-display').innerText = ranks[rankIndex];
+
+        // Update stats
+        document.getElementById('assessments-completed').innerText = perf.completedAssessments.length;
+        
+        // Calculate attendance rate
+        const totalDays = (perf.attendance.present || 0) + (perf.attendance.absent || 0);
+        const attendanceRate = totalDays > 0 ? Math.round((perf.attendance.present / totalDays) * 100) : 0;
+        document.getElementById('attendance-rate').innerText = attendanceRate + '%';
+
+        // Calculate average grade
+        if (perf.assessmentScores.length > 0) {
+            const avgGrade = (perf.assessmentScores.reduce((sum, score) => sum + parseFloat(score.percentage), 0) / perf.assessmentScores.length).toFixed(0);
+            document.getElementById('avg-grade').innerText = avgGrade + '%';
+        }
+
+        // Load assessments
+        loadAssessments();
+
+        // Load materials
+        loadMaterials();
+
+        // Load grades
+        loadGrades(perf.assessmentScores);
+
+        // Load attendance
+        document.getElementById('attendance-present').innerText = perf.attendance.present || 0;
+        document.getElementById('attendance-absent').innerText = perf.attendance.absent || 0;
+        document.getElementById('attendance-late').innerText = perf.attendance.late || 0;
+    }
+
+    function loadAssessments() {
+        const assessments = DB.getAllAssessments();
+        const container = document.getElementById('assessments-list');
+
+        if (assessments.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <p><i class="bi bi-inbox" style="font-size: 3rem;"></i></p>
+                    <p>No assessments assigned yet</p>
+                </div>
+            `;
+            return;
+        }
+
+        const perf = DB.getStudentPerformance(currentUser.id) || {};
+        let pendingCount = 0;
+
+        container.innerHTML = assessments.map(a => {
+            const isCompleted = perf.completedAssessments && perf.completedAssessments.includes(a.id);
+            if (!isCompleted) pendingCount++;
+
+            return `
+                <div class="assessment-card card mb-3 p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">${a.title}</h6>
+                            <p class="small text-muted mb-1">${a.description || 'No description'}</p>
+                            <p class="small mb-0">
+                                <i class="bi bi-question-circle"></i> ${a.questions.length} questions
+                                ${a.timeLimit ? ` | <i class="bi bi-clock"></i> ${a.timeLimit} mins` : ''}
+                            </p>
+                        </div>
+                        ${isCompleted ? 
+                            `<span class="badge bg-success">Completed</span>` :
+                            `<button class="btn btn-sm btn-primary" onclick="startAssessment('${a.id}')">
+                                <i class="bi bi-play"></i> Start
+                            </button>`
+                        }
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('pending-count').innerText = pendingCount + ' Pending';
+    }
+
+    function loadMaterials() {
+        const materials = DB.getMaterialsByGrade(currentUser.gradeLevel);
+        const container = document.getElementById('materials-list');
+
+        if (materials.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <p><i class="bi bi-file-text" style="font-size: 3rem;"></i></p>
+                    <p>No materials available yet</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = materials.map(m => `
+            <div class="material-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="fw-bold mb-1">${m.title}</h6>
+                        <p class="small text-muted mb-1">${m.subject}</p>
+                        <span class="badge bg-secondary">${m.type}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-success" onclick="viewMaterial('${m.id}')">
+                        <i class="bi bi-eye"></i> View
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadGrades(assessmentScores) {
+        const tbody = document.getElementById('grades-list');
+
+        if (!assessmentScores || assessmentScores.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No completed assessments yet</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = assessmentScores.map(score => {
+            const percentage = parseFloat(score.percentage);
+            const statusClass = percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger';
+            
+            return `
+                <tr>
+                    <td><strong>${score.assessmentId}</strong></td>
+                    <td>${new Date(score.completedAt).toLocaleDateString()}</td>
+                    <td>${score.score}/${score.maxScore}</td>
+                    <td>${percentage.toFixed(2)}%</td>
+                    <td><span class="badge ${statusClass}">${percentage >= 75 ? 'Pass' : 'Needs Review'}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function startAssessment(assessmentId) {
+        currentAssessmentId = assessmentId;
+        const assessment = DB.getAssessment(assessmentId);
+
+        if (!assessment) {
+            Swal.fire('Error', 'Assessment not found', 'error');
+            return;
+        }
+
+        document.getElementById('assessment-title').innerText = assessment.title;
+        
+        let content = '';
+        assessment.questions.forEach((q, index) => {
+            content += `
+                <div class="mb-4">
+                    <h6 class="fw-bold">Question ${index + 1}: ${q.question}</h6>
+                    <div class="list-group">
+                        ${q.options.map((option, optIndex) => `
+                            <label class="list-group-item">
+                                <input class="form-check-input me-2 question-${index}" type="radio" name="q${index}" value="${optIndex}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('assessment-content').innerHTML = content;
+        
+        const modal = new bootstrap.Modal(document.getElementById('assessmentModal'));
+        modal.show();
+    }
+
+    function submitAssessment() {
+        const assessment = DB.getAssessment(currentAssessmentId);
+        let score = 0;
+        let answered = 0;
+
+        assessment.questions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected) {
+                answered++;
+                const selectedValue = parseInt(selected.value);
+                if (selectedValue === q.correctIndex) {
+                    score++;
+                }
+            }
+        });
+
+        if (answered !== assessment.questions.length) {
+            Swal.fire('Warning', 'Please answer all questions', 'warning');
+            return;
+        }
+
+        // Record score
+        DB.recordAssessmentScore(currentUser.id, currentAssessmentId, score, assessment.questions.length);
+
+        // Show result
+        const percentage = (score / assessment.questions.length) * 100;
+        const itemMultiplier = Math.ceil(score / assessment.questions.length * 10);
+        
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+        Swal.fire({
+            title: 'Assessment Complete!',
+            html: `
+                <h4>${percentage.toFixed(2)}%</h4>
+                <p>You scored <strong>${score}/${assessment.questions.length}</strong></p>
+                <p><i class="bi bi-star-fill text-warning"></i> +${itemMultiplier * 10} XP earned!</p>
+            `,
+            icon: 'success'
+        }).then(() => {
+            bootstrap.Modal.getInstance(document.getElementById('assessmentModal')).hide();
+            loadDashboardData();
+        });
+    }
+
+    function viewMaterial(materialId) {
+        const material = DB.getMaterial(materialId);
+        if (!material) return;
+
+        Swal.fire({
+            title: material.title,
+            html: `
+                <div class="text-start">
+                    <p><strong>Subject:</strong> ${material.subject}</p>
+                    <p><strong>Type:</strong> <span class="badge bg-secondary">${material.type}</span></p>
+                    <hr>
+                    <div class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                        ${material.content}
+                    </div>
+                </div>
+            `,
+            width: 600,
+            confirmButtonText: 'Close'
+        });
+    }
+
+    function scrollToSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>

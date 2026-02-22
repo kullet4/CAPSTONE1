@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - QuizKo eLMS</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        .navbar { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; }
+        .card-header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; }
+        .btn-primary { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; border: none; }
+        .badge-warning { background: #f59e0b; }
+        .progress-bar { background: #f59e0b !important; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><i class="bi bi-mortarboard"></i> QuizKo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('students')"><i class="bi bi-people"></i> Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('teachers')"><i class="bi bi-person-workspace"></i> Teachers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('materials')"><i class="bi bi-book"></i> Materials</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('policies')"><i class="bi bi-file-text"></i> Policies</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="user-name"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="login.html">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- HEADER -->
+        <div class="mb-4 animate-slide">
+            <h1 class="mb-1"><i class="bi bi-shield-check"></i> School Official Dashboard</h1>
+            <p class="text-muted">Manage students, teachers, materials, and eLMS policies</p>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="row mb-4 animate-slide">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-students">0</div>
+                    <div class="stat-label">👥 Total Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-teachers">0</div>
+                    <div class="stat-label">👨‍🏫 Total Teachers</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-materials">0</div>
+                    <div class="stat-label">📚 Learning Materials</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-assessments">0</div>
+                    <div class="stat-label">📝 Assessments</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENTS SECTION -->
+        <section id="students" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-people-fill"></i> Student Management</h5>
+                    <button class="btn btn-light btn-sm" onclick="showAddStudentModal()">
+                        <i class="bi bi-plus-lg"></i> Add Student
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Grade Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-list">
+                                <tr><td colspan="5" class="text-center text-muted py-3">Loading students...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEACHERS SECTION -->
+        <section id="teachers" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-person-workspace"></i> Teacher Management</h5>
+                    <button class="btn btn-light btn-sm" onclick="showAddTeacherModal()">
+                        <i class="bi bi-plus-lg"></i> Add Teacher
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Grade Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachers-list">
+                                <tr><td colspan="5" class="text-center text-muted py-3">Loading teachers...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MATERIALS SECTION -->
+        <section id="materials" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-book-fill"></i> Learning Materials</h5>
+                    <button class="btn btn-light btn-sm" onclick="showAddMaterialModal()">
+                        <i class="bi bi-plus-lg"></i> Add Material
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Subject</th>
+                                    <th>Grade Level</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materials-list">
+                                <tr><td colspan="5" class="text-center text-muted py-3">Loading materials...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POLICIES SECTION -->
+        <section id="policies" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> eLMS Policies</h5>
+                    <button class="btn btn-light btn-sm" onclick="showEditPoliciesModal()">
+                        <i class="bi bi-pencil"></i> Edit Policies
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-bold">General Settings</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Platform Name:</strong> <span id="policy-platform-name">QuizKo eLMS</span></li>
+                                <li><strong>Passing Score:</strong> <span id="policy-passing-score">75</span>%</li>
+                                <li><strong>Max Attempts:</strong> <span id="policy-max-attempts">3</span></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-bold">Assessment Policy</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Time Limit Enabled:</strong> <span id="policy-time-limit">Yes</span></li>
+                                <li><strong>Randomize Questions:</strong> <span id="policy-randomize">No</span></li>
+                                <li><strong>Show Feedback:</strong> <span id="policy-feedback">Yes</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-person-plus"></i> Add New Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="addStudent(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Student Name</label>
+                        <input type="text" class="form-control" id="student-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="student-email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Grade Level</label>
+                        <select class="form-select" id="student-grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="student-password" value="student123">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addTeacherModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-person-plus"></i> Add New Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="addTeacher(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Teacher Name</label>
+                        <input type="text" class="form-control" id="teacher-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="teacher-email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Grade Level</label>
+                        <select class="form-select" id="teacher-grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="teacher-password" value="teacher123">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Material Modal -->
+<div class="modal fade" id="addMaterialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-lg"></i> Add Learning Material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="addMaterial(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Material Title</label>
+                        <input type="text" class="form-control" id="material-title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="material-subject" placeholder="e.g., Science, Math" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Grade Level</label>
+                        <select class="form-select" id="material-grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Material Type</label>
+                        <select class="form-select" id="material-type" required>
+                            <option value="">Select Type</option>
+                            <option value="lesson">Lesson</option>
+                            <option value="video">Video</option>
+                            <option value="document">Document</option>
+                            <option value="interactive">Interactive Activity</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-control" id="material-content" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Material</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Policies Modal -->
+<div class="modal fade" id="editPoliciesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit eLMS Policies</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="savePolicies(event)">
+                <div class="modal-body">
+                    <h6 class="fw-bold mb-3">General Settings</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Platform Name</label>
+                            <input type="text" class="form-control" id="edit-platform-name" value="QuizKo eLMS">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Passing Score (%)</label>
+                            <input type="number" class="form-control" id="edit-passing-score" value="75" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Max Assessment Attempts</label>
+                        <input type="number" class="form-control" id="edit-max-attempts" value="3" min="1">
+                    </div>
+
+                    <hr>
+                    <h6 class="fw-bold mb-3">Assessment Policy</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="edit-time-limit" checked>
+                        <label class="form-check-label" for="edit-time-limit">
+                            Enable Time Limit for Assessments
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="edit-randomize">
+                        <label class="form-check-label" for="edit-randomize">
+                            Randomize Question Order
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="edit-feedback" checked>
+                        <label class="form-check-label" for="edit-feedback">
+                            Show Answer Feedback to Students
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/data.js"></script>
+<script>
+    let currentUser;
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        loadDashboardData();
+    });
+
+    function checkAuth() {
+        const user = JSON.parse(localStorage.getItem('elms_current_user') || 'null');
+        if (!user || user.role !== 'official') {
+            window.location.href = 'login.html';
+            return;
+        }
+        currentUser = user;
+        document.getElementById('user-name').innerText = user.name;
+    }
+
+    function loadDashboardData() {
+        const students = DB.getUsersByRole('student');
+        const teachers = DB.getUsersByRole('teacher');
+        const materials = DB.getAllMaterials();
+        const assessments = DB.getAllAssessments();
+
+        // Update stats
+        document.getElementById('total-students').innerText = students.length;
+        document.getElementById('total-teachers').innerText = teachers.length;
+        document.getElementById('total-materials').innerText = materials.length;
+        document.getElementById('total-assessments').innerText = assessments.length;
+
+        // Load students list
+        loadStudentsList(students);
+        loadTeachersList(teachers);
+        loadMaterialsList(materials);
+        loadPolicies();
+    }
+
+    function loadStudentsList(students) {
+        const tbody = document.getElementById('students-list');
+        if (students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No students added yet</td></tr>';
+            return;
+        }
+        tbody.innerHTML = students.map(s => `
+            <tr>
+                <td>${s.avatar} ${s.name}</td>
+                <td>${s.email}</td>
+                <td>Grade ${s.gradeLevel}</td>
+                <td><span class="badge bg-success">Active</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editUser('${s.email}', 'student')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${s.email}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function loadTeachersList(teachers) {
+        const tbody = document.getElementById('teachers-list');
+        if (teachers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No teachers added yet</td></tr>';
+            return;
+        }
+        tbody.innerHTML = teachers.map(t => `
+            <tr>
+                <td>${t.avatar} ${t.name}</td>
+                <td>${t.email}</td>
+                <td>Grade ${t.gradeLevel}</td>
+                <td><span class="badge bg-info">Active</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editUser('${t.email}', 'teacher')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${t.email}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function loadMaterialsList(materials) {
+        const tbody = document.getElementById('materials-list');
+        if (materials.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No materials added yet</td></tr>';
+            return;
+        }
+        tbody.innerHTML = materials.map(m => `
+            <tr>
+                <td><strong>${m.title}</strong></td>
+                <td>${m.subject}</td>
+                <td>Grade ${m.gradeLevel}</td>
+                <td><span class="badge bg-secondary">${m.type}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editMaterial('${m.id}')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteMaterial('${m.id}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function loadPolicies() {
+        const policies = DB.getPolicies();
+        document.getElementById('policy-platform-name').innerText = policies.general.platformName;
+        document.getElementById('policy-passing-score').innerText = policies.general.passingScore;
+        document.getElementById('policy-max-attempts').innerText = policies.general.maxAttempts;
+        document.getElementById('policy-time-limit').innerText = policies.assessmentPolicy.timeLimitEnabled ? 'Yes' : 'No';
+        document.getElementById('policy-randomize').innerText = policies.assessmentPolicy.randomizeQuestions ? 'Yes' : 'No';
+        document.getElementById('policy-feedback').innerText = policies.assessmentPolicy.showAnswerFeedback ? 'Yes' : 'No';
+    }
+
+    function showAddStudentModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+        modal.show();
+    }
+
+    function showAddTeacherModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addTeacherModal'));
+        modal.show();
+    }
+
+    function showAddMaterialModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addMaterialModal'));
+        modal.show();
+    }
+
+    function showEditPoliciesModal() {
+        const policies = DB.getPolicies();
+        document.getElementById('edit-platform-name').value = policies.general.platformName;
+        document.getElementById('edit-passing-score').value = policies.general.passingScore;
+        document.getElementById('edit-max-attempts').value = policies.general.maxAttempts;
+        document.getElementById('edit-time-limit').checked = policies.assessmentPolicy.timeLimitEnabled;
+        document.getElementById('edit-randomize').checked = policies.assessmentPolicy.randomizeQuestions;
+        document.getElementById('edit-feedback').checked = policies.assessmentPolicy.showAnswerFeedback;
+
+        const modal = new bootstrap.Modal(document.getElementById('editPoliciesModal'));
+        modal.show();
+    }
+
+    function addStudent(event) {
+        event.preventDefault();
+        const name = document.getElementById('student-name').value;
+        const email = document.getElementById('student-email').value;
+        const grade = parseInt(document.getElementById('student-grade').value);
+        const password = document.getElementById('student-password').value;
+
+        DB.addUser(email, {
+            name,
+            email,
+            password,
+            role: 'student',
+            gradeLevel: grade,
+            avatar: '👧'
+        });
+
+        Swal.fire('Success', 'Student added successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addStudentModal')).hide();
+        document.getElementById('student-name').parentElement.parentElement.parentElement.reset();
+        loadDashboardData();
+    }
+
+    function addTeacher(event) {
+        event.preventDefault();
+        const name = document.getElementById('teacher-name').value;
+        const email = document.getElementById('teacher-email').value;
+        const grade = parseInt(document.getElementById('teacher-grade').value);
+        const password = document.getElementById('teacher-password').value;
+
+        DB.addUser(email, {
+            name,
+            email,
+            password,
+            role: 'teacher',
+            gradeLevel: grade,
+            avatar: '👨‍🏫'
+        });
+
+        Swal.fire('Success', 'Teacher added successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addTeacherModal')).hide();
+        loadDashboardData();
+    }
+
+    function addMaterial(event) {
+        event.preventDefault();
+        const title = document.getElementById('material-title').value;
+        const subject = document.getElementById('material-subject').value;
+        const grade = parseInt(document.getElementById('material-grade').value);
+        const type = document.getElementById('material-type').value;
+        const content = document.getElementById('material-content').value;
+
+        DB.createMaterial({
+            title,
+            subject,
+            gradeLevel: grade,
+            type,
+            content,
+            createdBy: currentUser.id
+        });
+
+        Swal.fire('Success', 'Material added successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('addMaterialModal')).hide();
+        loadDashboardData();
+    }
+
+    function savePolicies(event) {
+        event.preventDefault();
+        const policies = {
+            general: {
+                platformName: document.getElementById('edit-platform-name').value,
+                passingScore: parseInt(document.getElementById('edit-passing-score').value),
+                maxAttempts: parseInt(document.getElementById('edit-max-attempts').value)
+            },
+            assessmentPolicy: {
+                timeLimitEnabled: document.getElementById('edit-time-limit').checked,
+                randomizeQuestions: document.getElementById('edit-randomize').checked,
+                showAnswerFeedback: document.getElementById('edit-feedback').checked
+            },
+            attendancePolicy: DB.getPolicies().attendancePolicy
+        };
+
+        DB.updatePolicies(policies);
+        Swal.fire('Success', 'Policies updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editPoliciesModal')).hide();
+        loadPolicies();
+    }
+
+    function deleteUser(email) {
+        Swal.fire({
+            title: 'Confirm Delete',
+            text: 'Are you sure you want to delete this user?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545'
+        }).then(result => {
+            if (result.isConfirmed) {
+                const users = JSON.parse(localStorage.getItem('elms_users') || '{}');
+                delete users[email];
+                localStorage.setItem('elms_users', JSON.stringify(users));
+                Swal.fire('Deleted', 'User deleted successfully', 'success');
+                loadDashboardData();
+            }
+        });
+    }
+
+    function deleteMaterial(id) {
+        Swal.fire({
+            title: 'Confirm Delete',
+            text: 'Are you sure you want to delete this material?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545'
+        }).then(result => {
+            if (result.isConfirmed) {
+                const materials = JSON.parse(localStorage.getItem('elms_materials') || '{}');
+                delete materials[id];
+                localStorage.setItem('elms_materials', JSON.stringify(materials));
+                Swal.fire('Deleted', 'Material deleted successfully', 'success');
+                loadDashboardData();
+            }
+        });
+    }
+
+    function scrollToSection(sectionId) {
+        const element = document.getElementById(sectionId);
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>

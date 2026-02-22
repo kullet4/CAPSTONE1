@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizKo eLMS - Login</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/designOne.css">
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-card {
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .login-body {
+            padding: 40px;
+            background: white;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .demo-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .demo-btn {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .demo-btn-official {
+            background: #fff8dc;
+            border-color: #f59e0b;
+            color: #d97706;
+        }
+
+        .demo-btn-official:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .demo-btn-teacher {
+            background: #dbeafe;
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+
+        .demo-btn-teacher:hover {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .demo-btn-student {
+            background: #dbeafe;
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .demo-btn-student:hover {
+            background: #22c55e;
+            color: white;
+        }
+
+        .credentials-display {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .credentials-display.show {
+            max-height: 200px;
+        }
+
+        .credential-item {
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .credential-item:last-child {
+            border-bottom: none;
+        }
+
+        .credential-label {
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="card login-card" style="width: 100%; max-width: 450px;">
+        <div class="login-header">
+            <h1>🌟 QuizKo 🌟</h1>
+            <p class="mb-0">Interactive Learning Platform</p>
+        </div>
+
+        <div class="login-body">
+            <h5 class="text-center mb-4 fw-bold">Welcome to eLMS</h5>
+
+            <!-- Login Form -->
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Email Address</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100 py-2 mb-3">
+                    🔓 LOGIN
+                </button>
+            </form>
+
+            <!-- Demo Access -->
+            <div class="demo-section">
+                <p class="text-center fw-bold mb-3 text-muted">📱 Quick Demo Access</p>
+                
+                <button onclick="demoLogin('official')" class="btn demo-btn demo-btn-official w-100">
+                    👨‍💼 School Official Demo
+                </button>
+
+                <button onclick="demoLogin('teacher')" class="btn demo-btn demo-btn-teacher w-100">
+                    👩‍🏫 Teacher Demo
+                </button>
+
+                <button onclick="demoLogin('student')" class="btn demo-btn demo-btn-student w-100">
+                    👧 Student Demo
+                </button>
+
+                <div class="accordion mt-3" id="credentialsAccordion">
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#credentialsCollapse">
+                                📋 Demo Credentials
+                            </button>
+                        </h2>
+                        <div id="credentialsCollapse" class="accordion-collapse collapse" data-bs-parent="#credentialsAccordion">
+                            <div class="accordion-body p-2">
+                                <div class="credential-item">
+                                    <span class="credential-label">Official:</span> admin@school.com / admin123
+                                </div>
+                                <div class="credential-item">
+                                    <span class="credential-label">Teacher:</span> teacher01@school.com / teacher123
+                                </div>
+                                <div class="credential-item">
+                                    <span class="credential-label">Student:</span> student01@school.com / student123
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/data.js"></script>
+<script>
+    function handleLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const user = DB.getUser(email);
+        
+        if (!user) {
+            Swal.fire({
+                icon: 'error',
+                title: 'User Not Found',
+                text: 'Please check your email address'
+            });
+            return;
+        }
+
+        if (user.password !== password) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Password',
+                text: 'Please check your password'
+            });
+            return;
+        }
+
+        // Save session
+        localStorage.setItem('elms_current_user', JSON.stringify(user));
+        
+        // Redirect based on role
+        window.location.href = getDashboardURL(user.role);
+    }
+
+    function demoLogin(role) {
+        let user;
+        
+        switch(role) {
+            case 'official':
+                user = DB.getUser('admin@school.com');
+                break;
+            case 'teacher':
+                user = DB.getUser('teacher01@school.com');
+                break;
+            case 'student':
+                user = DB.getUser('student01@school.com');
+                break;
+        }
+
+        if (user) {
+            localStorage.setItem('elms_current_user', JSON.stringify(user));
+            window.location.href = getDashboardURL(user.role);
+        }
+    }
+
+    function getDashboardURL(role) {
+        switch(role) {
+            case 'official':
+                return 'admin-dashboard.html';
+            case 'teacher':
+                return 'teacher-dashboard.html';
+            case 'student':
+                return 'student-dashboard.html';
+            default:
+                return 'login.html';
+        }
+    }
+
+    // Initialize database on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        console.log('eLMS Database initialized');
+    });
+</script>
+</body>
+</html>
