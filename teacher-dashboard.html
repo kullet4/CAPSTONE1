@@ -174,6 +174,7 @@
                             <thead>
                                 <tr>
                                     <th>Student Name</th>
+                                    <th>Class</th>
                                     <th>XP</th>
                                     <th>Level</th>
                                     <th>Assessments Taken</th>
@@ -182,7 +183,7 @@
                                 </tr>
                             </thead>
                             <tbody id="students-list">
-                                <tr><td colspan="6" class="text-center text-muted py-3">No students in your class</td></tr>
+                                <tr><td colspan="7" class="text-center text-muted py-3">No students in your class</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -471,12 +472,14 @@
     }
 
     function loadDashboardData() {
+        // Get all classes where this teacher is assigned
         const myClasses = DB.getClassesByTeacher(currentUser.id);
         const myAssessments = DB.getAssessmentsByTeacher(currentUser.id);
         const templates = DB.getTemplateAssessments();
         
+        // Get total students across all teacher's classes
         let totalStudents = 0;
-        myClasses.forEach(c => totalStudents += c.studentIds.length);
+        myClasses.forEach(c => totalStudents += (c.studentIds || []).length);
 
         // Update stats
         document.getElementById('total-classes').innerText = myClasses.length;
@@ -487,7 +490,7 @@
         loadMyAssessments(myAssessments);
         loadTemplates(templates);
 
-        // Load students
+        // Load students from all classes
         loadStudentsList(myClasses);
 
         // Load materials for this teacher
@@ -552,27 +555,31 @@
         const tbody = document.getElementById('students-list');
         const allStudents = [];
         
+        // Get all students from all teacher's classes
         myClasses.forEach(classData => {
-            classData.studentIds.forEach(studentId => {
-                const user = DB.getAllUsers().find(u => u.id === studentId);
-                if (user) {
-                    const perf = DB.getStudentPerformance(studentId);
-                    allStudents.push({
-                        ...user,
-                        ...perf
-                    });
-                }
-            });
+            if (classData.studentIds && classData.studentIds.length > 0) {
+                classData.studentIds.forEach(studentId => {
+                    const user = DB.getAllUsers().find(u => u.id === studentId);
+                    if (user) {
+                        const perf = DB.getStudentPerformance(studentId);
+                        allStudents.push({
+                            ...user,
+                            ...perf,
+                            className: classData.name
+                        });
+                    }
+                });
+            }
         });
 
         if (allStudents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No students in your classes</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">No students in your classes</td></tr>';
             return;
         }
 
         let totalScore = 0;
         tbody.innerHTML = allStudents.map(s => {
-            const avgScore = s.assessmentScores.length > 0
+            const avgScore = s.assessmentScores && s.assessmentScores.length > 0
                 ? (s.assessmentScores.reduce((sum, score) => sum + parseFloat(score.percentage), 0) / s.assessmentScores.length).toFixed(2)
                 : 'N/A';
             if (avgScore !== 'N/A') totalScore += parseFloat(avgScore);
@@ -580,9 +587,10 @@
             return `
                 <tr>
                     <td>${s.avatar} ${s.name}</td>
+                    <td><small>${s.className}</small></td>
                     <td><strong>${s.xp || 0}</strong></td>
                     <td>Level ${s.level || 1}</td>
-                    <td>${s.assessmentScores.length}</td>
+                    <td>${s.assessmentScores && s.assessmentScores.length > 0 ? s.assessmentScores.length : 0}</td>
                     <td>${avgScore}%</td>
                     <td>
                         <button class="btn btn-sm btn-outline-info" onclick="viewStudentProgress('${s.id}')">

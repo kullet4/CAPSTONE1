@@ -14,7 +14,7 @@
         .btn-primary { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; border: none; }
         .badge-warning { background: #f59e0b; }
         .progress-bar { background: #f59e0b !important; }
-        .avatar-btn.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: white; border-color: #d97706 !important; }
+        .avatar-btn.active, .avatar-btn-student.active, .avatar-btn-edit.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: white; border-color: #d97706 !important; }
     </style>
 </head>
 <body>
@@ -36,6 +36,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="scrollToSection('teachers')"><i class="bi bi-person-workspace"></i> Teachers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="scrollToSection('classes')"><i class="bi bi-door-open"></i> Classes</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="scrollToSection('materials')"><i class="bi bi-book"></i> Materials</a>
@@ -184,6 +187,37 @@
             </div>
         </section>
 
+        <!-- CLASSES/SECTIONS MANAGEMENT -->
+        <section id="classes" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-door-open"></i> Classes & Sections</h5>
+                    <button class="btn btn-light btn-sm" onclick="showCreateClassModal()">
+                        <i class="bi bi-plus-lg"></i> Create Class
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Class Code</th>
+                                    <th>Section Name</th>
+                                    <th>Grade Level</th>
+                                    <th>Teacher</th>
+                                    <th>Students</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classes-list">
+                                <tr><td colspan="6" class="text-center text-muted py-3">Loading classes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- POLICIES SECTION -->
         <section id="policies" class="mb-4 animate-slide">
             <div class="card">
@@ -255,6 +289,15 @@
                         <label class="form-label">Password</label>
                         <input type="password" class="form-control" id="student-password" value="student123">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Avatar</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary avatar-btn-student" onclick="selectStudentAvatar('👧')" data-avatar="👧" data-bs-toggle="tooltip" title="Girl">👧</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn-student" onclick="selectStudentAvatar('👦')" data-avatar="👦" data-bs-toggle="tooltip" title="Boy">👦</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn-student" onclick="selectStudentAvatar('🧒')" data-avatar="🧒" data-bs-toggle="tooltip" title="Child">🧒</button>
+                        </div>
+                        <input type="hidden" id="student-avatar" value="👧">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -302,9 +345,9 @@
                     <div class="mb-3">
                         <label class="form-label">Avatar</label>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('👩‍🏫')" data-avatar="👩‍🏫">👩‍🏫</button>
-                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('👨‍🏫')" data-avatar="👨‍🏫">👨‍🏫</button>
-                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('🧑‍🏫')" data-avatar="🧑‍🏫">🧑‍🏫</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('👩‍🏫')" data-avatar="👩‍🏫" data-bs-toggle="tooltip" title="Female Teacher">👩‍🏫</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('👨‍🏫')" data-avatar="👨‍🏫" data-bs-toggle="tooltip" title="Male Teacher">👨‍🏫</button>
+                            <button type="button" class="btn btn-outline-secondary avatar-btn" onclick="selectAvatar('🧑‍🏫')" data-avatar="🧑‍🏫" data-bs-toggle="tooltip" title="Non-binary Teacher">🧑‍🏫</button>
                         </div>
                         <input type="hidden" id="teacher-avatar" value="👨‍🏫">
                     </div>
@@ -312,6 +355,161 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="saveUserEdit(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="edit-user-email">
+                    <input type="hidden" id="edit-user-role">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="edit-user-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="edit-user-email-display" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Grade Level</label>
+                        <select class="form-select" id="edit-user-grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="edit-user-password">
+                        <small class="text-muted">Leave empty to keep current password</small>
+                    </div>
+                    <div class="mb-3" id="avatar-selection">
+                        <label class="form-label">Avatar</label>
+                        <div class="d-flex gap-2" id="avatar-buttons-container">
+                            <!-- Avatars will be populated based on role -->
+                        </div>
+                        <input type="hidden" id="edit-user-avatar">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Class Modal -->
+<div class="modal fade" id="createClassModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-lg"></i> Create New Class</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="createClass(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Class Code (e.g., G1-A, G3-B)</label>
+                        <input type="text" class="form-control" id="class-code" placeholder="G1-A" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Section Name</label>
+                        <input type="text" class="form-control" id="class-name" placeholder="Grade 1 - Section A" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Grade Level</label>
+                        <select class="form-select" id="class-grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assign Teacher (Optional)</label>
+                        <select class="form-select" id="class-teacher">
+                            <option value="">Select Teacher</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Students to Class Modal -->
+<div class="modal fade" id="assignStudentsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-lg"></i> Assign Students to Class</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="saveStudentAssignments(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="current-class-id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Select Students</label>
+                        <div id="students-checklist" class="list-group">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Assignments</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Teacher to Class Modal -->
+<div class="modal fade" id="assignTeacherModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> Assign Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form onsubmit="assignTeacherToClass(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="assign-teacher-class-id">
+                    <div class="mb-3">
+                        <label class="form-label">Select Teacher</label>
+                        <select class="form-select" id="assign-teacher-select" required>
+                            <option value="">Choose a Teacher</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
                 </div>
             </form>
         </div>
@@ -460,11 +658,22 @@
         });
     }
 
+    function selectStudentAvatar(avatar) {
+        document.getElementById('student-avatar').value = avatar;
+        document.querySelectorAll('.avatar-btn-student').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-avatar') === avatar) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
     function loadDashboardData() {
         const students = DB.getUsersByRole('student');
         const teachers = DB.getUsersByRole('teacher');
         const materials = DB.getAllMaterials();
         const assessments = DB.getAllAssessments();
+        const classes = DB.getAllClasses();
 
         // Update stats
         document.getElementById('total-students').innerText = students.length;
@@ -475,6 +684,7 @@
         // Load students list
         loadStudentsList(students);
         loadTeachersList(teachers);
+        loadClassesList(classes);
         loadMaterialsList(materials);
         loadPolicies();
     }
@@ -564,11 +774,21 @@
     function showAddStudentModal() {
         const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
         modal.show();
+        setTimeout(() => {
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+        }, 100);
     }
 
     function showAddTeacherModal() {
         const modal = new bootstrap.Modal(document.getElementById('addTeacherModal'));
         modal.show();
+        setTimeout(() => {
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+        }, 100);
     }
 
     function showAddMaterialModal() {
@@ -589,25 +809,219 @@
         modal.show();
     }
 
+    // CLASS MANAGEMENT FUNCTIONS
+    function showCreateClassModal() {
+        const teachers = DB.getUsersByRole('teacher');
+        const select = document.getElementById('class-teacher');
+        select.innerHTML = '<option value="">Select Teacher (Optional)</option>' + 
+            teachers.map(t => `<option value="${t.id}">${t.avatar} ${t.name} (Grade ${t.gradeLevel})</option>`).join('');
+        
+        // Reset form
+        document.getElementById('class-code').value = '';
+        document.getElementById('class-name').value = '';
+        document.getElementById('class-grade').value = '';
+        document.getElementById('class-teacher').value = '';
+        
+        const modal = new bootstrap.Modal(document.getElementById('createClassModal'));
+        modal.show();
+    }
+
+    function createClass(event) {
+        event.preventDefault();
+        const code = document.getElementById('class-code').value;
+        const name = document.getElementById('class-name').value;
+        const grade = parseInt(document.getElementById('class-grade').value);
+        const teacherId = document.getElementById('class-teacher').value;
+
+        const newClass = DB.createClass({
+            code,
+            name,
+            gradeLevel: grade,
+            teacherId: teacherId || null,
+            studentIds: []
+        });
+
+        Swal.fire('Success', 'Class created successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('createClassModal')).hide();
+        loadDashboardData();
+    }
+
+    function loadClassesList(classes) {
+        const tbody = document.getElementById('classes-list');
+        if (classes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No classes created yet</td></tr>';
+            return;
+        }
+
+        // Group classes by grade level to generate sequential codes
+        const classesByGrade = {};
+        classes.forEach(c => {
+            if (!classesByGrade[c.gradeLevel]) {
+                classesByGrade[c.gradeLevel] = [];
+            }
+            classesByGrade[c.gradeLevel].push(c);
+        });
+
+        tbody.innerHTML = classes.map(c => {
+            const teacher = c.teacherId ? DB.getTeacherInfo(c.teacherId) : null;
+            const studentCount = (c.studentIds || []).length;
+            
+            // Generate code if missing: G{grade}-{letter} (A, B, C, etc.)
+            let classCode = c.code;
+            if (!classCode) {
+                const gradeClasses = classesByGrade[c.gradeLevel];
+                const indexInGrade = gradeClasses.indexOf(c);
+                const letter = String.fromCharCode(65 + indexInGrade); // A, B, C, D...
+                classCode = `G${c.gradeLevel}-${letter}`;
+            }
+            
+            return `
+                <tr>
+                    <td><strong>${classCode}</strong></td>
+                    <td>${c.name}</td>
+                    <td>Grade ${c.gradeLevel}</td>
+                    <td>${teacher ? `${teacher.avatar} ${teacher.name}` : '<span class="text-muted">Unassigned</span>'}</td>
+                    <td><span class="badge bg-info">${studentCount} students</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="showAssignTeacherModal('${c.id}')" title="Assign Teacher">
+                            <i class="bi bi-person-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="showAssignStudentsModal('${c.id}')" title="Manage Students">
+                            <i class="bi bi-people-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteClass('${c.id}')" title="Delete Class">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function showAssignStudentsModal(classId) {
+        document.getElementById('current-class-id').value = classId;
+        
+        const classData = DB.getClass(classId);
+        const allStudents = DB.getUsersByRole('student');
+        const assignedStudents = classData.studentIds || [];
+
+        const checklistHtml = allStudents.map(student => `
+            <label class="list-group-item">
+                <input type="checkbox" class="form-check-input me-2 student-checkbox" value="${student.id}" 
+                    ${assignedStudents.includes(student.id) ? 'checked' : ''}>
+                ${student.avatar} ${student.name} (Grade ${student.gradeLevel})
+            </label>
+        `).join('');
+
+        document.getElementById('students-checklist').innerHTML = checklistHtml;
+        const modal = new bootstrap.Modal(document.getElementById('assignStudentsModal'));
+        modal.show();
+    }
+
+    function saveStudentAssignments(event) {
+        event.preventDefault();
+        const classId = document.getElementById('current-class-id').value;
+        const checked = document.querySelectorAll('.student-checkbox:checked');
+        const selectedStudentIds = Array.from(checked).map(cb => cb.value);
+
+        const classData = DB.getClass(classId);
+        classData.studentIds = selectedStudentIds;
+        DB.updateClass(classId, classData);
+
+        Swal.fire('Success', 'Students assigned successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('assignStudentsModal')).hide();
+        loadDashboardData();
+    }
+
+    function showAssignTeacherModal(classId) {
+        document.getElementById('assign-teacher-class-id').value = classId;
+        
+        const teachers = DB.getUsersByRole('teacher');
+        const classData = DB.getClass(classId);
+        const select = document.getElementById('assign-teacher-select');
+        
+        select.innerHTML = '<option value="">Choose a Teacher</option>' + 
+            teachers.map(t => `<option value="${t.id}" ${classData.teacherId === t.id ? 'selected' : ''}>${t.avatar} ${t.name}</option>`).join('');
+
+        const modal = new bootstrap.Modal(document.getElementById('assignTeacherModal'));
+        modal.show();
+    }
+
+    function assignTeacherToClass(event) {
+        event.preventDefault();
+        const classId = document.getElementById('assign-teacher-class-id').value;
+        const teacherId = document.getElementById('assign-teacher-select').value;
+
+        if (!teacherId) {
+            Swal.fire('Error', 'Please select a teacher', 'error');
+            return;
+        }
+
+        DB.assignTeacherToClass(teacherId, classId);
+        Swal.fire('Success', 'Teacher assigned to class!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('assignTeacherModal')).hide();
+        loadDashboardData();
+    }
+
+    function deleteClass(classId) {
+        Swal.fire({
+            title: 'Delete Class',
+            text: 'Are you sure? This will remove the class and all student assignments.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545'
+        }).then(result => {
+            if (result.isConfirmed) {
+                DB.deleteClass(classId);
+                Swal.fire('Deleted!', 'Class deleted successfully', 'success');
+                loadDashboardData();
+            }
+        });
+    }
+
     function addStudent(event) {
         event.preventDefault();
         const name = document.getElementById('student-name').value;
         const email = document.getElementById('student-email').value;
         const grade = parseInt(document.getElementById('student-grade').value);
         const password = document.getElementById('student-password').value;
+        const avatar = document.getElementById('student-avatar').value;
 
-        DB.addUser(email, {
+        // Create the student user
+        const newStudent = DB.addUser(email, {
             name,
             email,
             password,
             role: 'student',
             gradeLevel: grade,
-            avatar: '👧'
+            avatar
         });
+
+        // Auto-assign to matching grade teacher's class
+        const allTeachers = DB.getUsersByRole('teacher');
+        const matchingTeacher = allTeachers.find(t => t.gradeLevel === grade);
+        
+        if (matchingTeacher) {
+            const classes = DB.getClassesByTeacher(matchingTeacher.id);
+            if (classes.length > 0) {
+                const classData = classes[0];
+                if (!classData.studentIds) classData.studentIds = [];
+                classData.studentIds.push(newStudent.id);
+                DB.updateClass(classData.id, classData);
+            }
+        }
 
         Swal.fire('Success', 'Student added successfully!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('addStudentModal')).hide();
-        document.getElementById('student-name').parentElement.parentElement.parentElement.reset();
+        
+        // Reset form
+        document.getElementById('student-name').value = '';
+        document.getElementById('student-email').value = '';
+        document.getElementById('student-grade').value = '';
+        document.getElementById('student-password').value = 'student123';
+        document.getElementById('student-avatar').value = '👧';
+        document.querySelectorAll('.avatar-btn-student').forEach(btn => btn.classList.remove('active'));
+        
         loadDashboardData();
     }
 
@@ -619,7 +1033,8 @@
         const password = document.getElementById('teacher-password').value;
         const avatar = document.getElementById('teacher-avatar').value;
 
-        DB.addUser(email, {
+        // Add the teacher user
+        const newTeacher = DB.addUser(email, {
             name,
             email,
             password,
@@ -628,7 +1043,15 @@
             avatar
         });
 
-        Swal.fire('Success', 'Teacher added successfully!', 'success');
+        // Automatically create a default class for the teacher
+        DB.createClass({
+            name: `Grade ${grade} - ${name}'s Class`,
+            gradeLevel: grade,
+            teacherId: newTeacher.id,
+            studentIds: []
+        });
+
+        Swal.fire('Success', 'Teacher and class created successfully!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('addTeacherModal')).hide();
         
         // Reset form
@@ -725,6 +1148,87 @@
     function scrollToSection(sectionId) {
         const element = document.getElementById(sectionId);
         element.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function editUser(email, role) {
+        const user = DB.getUser(email);
+        if (!user) {
+            Swal.fire('Error', 'User not found', 'error');
+            return;
+        }
+
+        // Set modal data
+        document.getElementById('edit-user-email').value = email;
+        document.getElementById('edit-user-email-display').value = email;
+        document.getElementById('edit-user-role').value = role;
+        document.getElementById('edit-user-name').value = user.name;
+        document.getElementById('edit-user-grade').value = user.gradeLevel || '';
+        document.getElementById('edit-user-avatar').value = user.avatar || (role === 'teacher' ? '👨‍🏫' : '👧');
+        document.getElementById('edit-user-password').value = '';
+
+        // Set avatar buttons based on role
+        const container = document.getElementById('avatar-buttons-container');
+        let avatarOptions;
+        if (role === 'teacher') {
+            avatarOptions = [
+                { emoji: '👩‍🏫', label: 'Female Teacher' },
+                { emoji: '👨‍🏫', label: 'Male Teacher' },
+                { emoji: '🧑‍🏫', label: 'Non-binary Teacher' }
+            ];
+        } else {
+            avatarOptions = [
+                { emoji: '👧', label: 'Girl' },
+                { emoji: '👦', label: 'Boy' },
+                { emoji: '🧒', label: 'Child' }
+            ];
+        }
+
+        container.innerHTML = avatarOptions.map(opt => `
+            <button type="button" class="btn btn-outline-secondary avatar-btn-edit ${user.avatar === opt.emoji ? 'active' : ''}" 
+                    onclick="selectEditAvatar('${opt.emoji}')" data-avatar="${opt.emoji}" data-bs-toggle="tooltip" title="${opt.label}">
+                ${opt.emoji}
+            </button>
+        `).join('');
+
+        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        modal.show();
+
+        // Initialize tooltips after modal is shown
+        setTimeout(() => {
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+        }, 100);
+    }
+
+    function selectEditAvatar(avatar) {
+        document.getElementById('edit-user-avatar').value = avatar;
+        document.querySelectorAll('.avatar-btn-edit').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.avatar === avatar) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    function saveUserEdit(event) {
+        event.preventDefault();
+        const email = document.getElementById('edit-user-email').value;
+        const role = document.getElementById('edit-user-role').value;
+        const name = document.getElementById('edit-user-name').value;
+        const gradeLevel = parseInt(document.getElementById('edit-user-grade').value);
+        const password = document.getElementById('edit-user-password').value;
+        const avatar = document.getElementById('edit-user-avatar').value;
+
+        const updates = { name, gradeLevel, avatar };
+        if (password) {
+            updates.password = password;
+        }
+
+        DB.updateUser(email, updates);
+        Swal.fire('Success', 'User updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+        loadDashboardData();
     }
 </script>
 

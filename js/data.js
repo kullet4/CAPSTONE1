@@ -328,6 +328,92 @@ class eLMSDatabase {
         localStorage.setItem('elms_classes', JSON.stringify(classes));
         return classes[id];
     }
+
+    updateClass(id, updates) {
+        const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
+        if (classes[id]) {
+            classes[id] = { ...classes[id], ...updates };
+            localStorage.setItem('elms_classes', JSON.stringify(classes));
+            return classes[id];
+        }
+        return null;
+    }
+
+    // CLASS MANAGEMENT - Enhanced with proper relationships
+    assignStudentToClass(studentId, classId) {
+        const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
+        if (classes[classId]) {
+            if (!classes[classId].studentIds) {
+                classes[classId].studentIds = [];
+            }
+            // Prevent duplicates
+            if (!classes[classId].studentIds.includes(studentId)) {
+                classes[classId].studentIds.push(studentId);
+                localStorage.setItem('elms_classes', JSON.stringify(classes));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    removeStudentFromClass(studentId, classId) {
+        const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
+        if (classes[classId] && classes[classId].studentIds) {
+            classes[classId].studentIds = classes[classId].studentIds.filter(id => id !== studentId);
+            localStorage.setItem('elms_classes', JSON.stringify(classes));
+            return true;
+        }
+        return false;
+    }
+
+    assignTeacherToClass(teacherId, classId) {
+        const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
+        if (classes[classId]) {
+            classes[classId].teacherId = teacherId;
+            localStorage.setItem('elms_classes', JSON.stringify(classes));
+            return true;
+        }
+        return false;
+    }
+
+    getStudentsInClass(classId) {
+        const classData = this.getClass(classId);
+        if (!classData || !classData.studentIds) return [];
+        
+        const users = JSON.parse(localStorage.getItem('elms_users') || '{}');
+        return classData.studentIds
+            .map(studentId => Object.values(users).find(u => u.id === studentId))
+            .filter(u => u !== undefined);
+    }
+
+    getClassesForStudent(studentId) {
+        return this.getAllClasses().filter(c => c.studentIds && c.studentIds.includes(studentId));
+    }
+
+    getTeacherInfo(teacherId) {
+        const users = JSON.parse(localStorage.getItem('elms_users') || '{}');
+        return Object.values(users).find(u => u.id === teacherId) || null;
+    }
+
+    // Get class details with full relationships
+    getClassWithDetails(classId) {
+        const classData = this.getClass(classId);
+        if (!classData) return null;
+
+        return {
+            ...classData,
+            teacher: this.getTeacherInfo(classData.teacherId),
+            students: this.getStudentsInClass(classId),
+            studentCount: (classData.studentIds || []).length
+        };
+    }
+
+    deleteClass(classId) {
+        const classes = JSON.parse(localStorage.getItem('elms_classes') || '{}');
+        delete classes[classId];
+        localStorage.setItem('elms_classes', JSON.stringify(classes));
+        return true;
+    }
 }
 
 // Global database instance
