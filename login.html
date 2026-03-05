@@ -124,36 +124,6 @@
             background: #22c55e;
             color: white;
         }
-
-        .credentials-display {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .credentials-display.show {
-            max-height: 200px;
-        }
-
-        .credential-item {
-            padding: 8px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .credential-item:last-child {
-            border-bottom: none;
-        }
-
-        .credential-label {
-            font-weight: bold;
-            color: #667eea;
-        }
     </style>
 </head>
 <body>
@@ -200,29 +170,6 @@
                 <button onclick="demoLogin('student')" class="btn demo-btn demo-btn-student w-100">
                     👧 Student Demo
                 </button>
-
-                <div class="accordion mt-3" id="credentialsAccordion">
-                    <div class="accordion-item border-0">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#credentialsCollapse">
-                                📋 Demo Credentials
-                            </button>
-                        </h2>
-                        <div id="credentialsCollapse" class="accordion-collapse collapse" data-bs-parent="#credentialsAccordion">
-                            <div class="accordion-body p-2">
-                                <div class="credential-item">
-                                    <span class="credential-label">Official:</span> admin@school.com / admin123
-                                </div>
-                                <div class="credential-item">
-                                    <span class="credential-label">Teacher:</span> teacher01@school.com / teacher123
-                                </div>
-                                <div class="credential-item">
-                                    <span class="credential-label">Student:</span> student01@school.com / student123
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

@@ -99,11 +99,20 @@
         .material-card {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             border-left: 5px solid #22c55e;
+        }
+
+        .material-card h6 {
+            margin-bottom: 8px;
+        }
+
+        .material-card p {
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
 
         .material-card:hover {
@@ -559,8 +568,8 @@
             <div class="material-card">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <h6 class="fw-bold mb-1">${m.title}</h6>
-                        <p class="small text-muted mb-1">${m.subject}</p>
+                        <h6 class="fw-bold mb-2">${m.title}</h6>
+                        <p class="small text-muted mb-2">${m.subject}</p>
                         <span class="badge bg-secondary">${m.type}</span>
                     </div>
                     <button class="btn btn-sm btn-outline-success" onclick="viewMaterial('${m.id}')">
