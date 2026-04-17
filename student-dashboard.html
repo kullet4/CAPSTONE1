@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - QuizKo eLMS</title>
+    <meta name="theme-color" content="#22c55e">
+    <link rel="manifest" href="manifest.webmanifest">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -142,46 +144,47 @@
         .attendance-late {
             background: #f59e0b;
         }
+
+        .dashboard-sidebar {
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .dashboard-brand {
+            color: #fff;
+        }
     </style>
 </head>
-<body>
+<body id="top">
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="bi bi-mortarboard"></i> QuizKo</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="scrollToSection('assessments')"><i class="bi bi-clipboard-check"></i> Assessments</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="scrollToSection('materials')"><i class="bi bi-book"></i> Materials</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="scrollToSection('grades')"><i class="bi bi-graph-up"></i> Grades</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> <span id="user-name"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="login.html">Logout</a></li>
-                    </ul>
-                </li>
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;">
+            <a class="dashboard-brand" href="#top"><i class="bi bi-mortarboard"></i> QuizKo</a>
+            <button class="sidebar-hamburger" title="Toggle sidebar"></button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="nav-link active" aria-current="page" href="#top"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a class="nav-link" href="#assessments"><i class="bi bi-clipboard-check"></i> Assessments</a>
+            <a class="nav-link" href="#materials"><i class="bi bi-book"></i> Materials</a>
+            <a class="nav-link" href="#grades"><i class="bi bi-graph-up"></i> Grades</a>
+        </nav>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-user dropdown">
+            <a class="dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span><i class="bi bi-person-circle"></i> <span id="user-name"></span></span>
+                <i class="bi bi-chevron-down small"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="login.html">Logout</a></li>
             </ul>
         </div>
-    </div>
-</nav>
+    </aside>
 
 <!-- MAIN CONTENT -->
-<div class="main-content">
+<div class="dashboard-content main-content">
     <div class="container-fluid">
 
         <!-- HEADER -->
@@ -242,6 +245,48 @@
                 </div>
             </div>
         </div>
+
+        <!-- AUTONOMY & RELATEDNESS -->
+        <section class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-stars"></i> Choose Your Learning Path</h5>
+                    <span class="badge bg-light text-dark">Student-led learning</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3" id="learning-paths-list">
+                        <div class="col-12 text-muted">Loading personalized learning paths...</div>
+                    </div>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-lg-7">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-people"></i> Class Leaderboard</h6>
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Learner</th>
+                                            <th>XP</th>
+                                            <th>Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="class-leaderboard-list">
+                                        <tr><td colspan="4" class="text-center text-muted py-3">Waiting for class data...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-award"></i> Your Badges</h6>
+                            <div class="row g-2" id="badge-list">
+                                <div class="col-12 text-muted">Badges will appear here.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ACHIEVEMENTS -->
         <section class="mb-4 animate-slide">
@@ -397,7 +442,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script src="js/data.js"></script>
+<script src="js/app-shell.js"></script>
 <script src="js/firebase-db.js"></script>
+<script src="js/dashboard-nav.js"></script>
 <script>
     let currentUser;
     let currentAssessmentId = null;
@@ -436,19 +483,20 @@
 
     // Initialize dashboard
     document.addEventListener('DOMContentLoaded', () => {
-        checkAuth();
-        loadDashboardData();
+        if (checkAuth()) {
+            loadDashboardData();
+        }
     });
 
     function checkAuth() {
-        const user = JSON.parse(localStorage.getItem('elms_current_user') || 'null');
+        const user = window.QuizKoApp ? QuizKoApp.requireRole(['student']) : JSON.parse(localStorage.getItem('elms_current_user') || 'null');
         if (!user || user.role !== 'student') {
-            window.location.href = 'login.html';
-            return;
+            return false;
         }
         currentUser = user;
         document.getElementById('user-name').innerText = user.name;
         document.getElementById('greeting-name').innerText = user.name.split(' ')[0];
+        return true;
     }
 
     function loadDashboardData() {
@@ -495,6 +543,11 @@
         // Load materials
         loadMaterials();
 
+        // Load SDT learning supports
+        loadLearningPaths();
+        loadBadges();
+        loadClassLeaderboard();
+
         // Load grades
         loadGrades(perf.assessmentScores);
 
@@ -505,7 +558,7 @@
     }
 
     function loadAssessments() {
-        const assessments = DB.getAllAssessments();
+        const assessments = DB.getAllAssessments().filter(assessment => !assessment.gradeLevel || assessment.gradeLevel === currentUser.gradeLevel);
         const container = document.getElementById('assessments-list');
 
         if (assessments.length === 0) {
@@ -591,10 +644,11 @@
         tbody.innerHTML = assessmentScores.map(score => {
             const percentage = parseFloat(score.percentage);
             const statusClass = percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger';
+            const assessment = DB.getAssessment(score.assessmentId);
             
             return `
                 <tr>
-                    <td><strong>${score.assessmentId}</strong></td>
+                    <td><strong>${assessment ? assessment.title : score.assessmentId}</strong></td>
                     <td>${new Date(score.completedAt).toLocaleDateString()}</td>
                     <td>${score.score}/${score.maxScore}</td>
                     <td>${percentage.toFixed(2)}%</td>
@@ -602,6 +656,76 @@
                 </tr>
             `;
         }).join('');
+    }
+
+    function loadLearningPaths() {
+        const container = document.getElementById('learning-paths-list');
+        const recommendations = DB.getStudentRecommendations(currentUser.id);
+
+        container.innerHTML = recommendations.learningPaths.map((path) => `
+            <div class="col-md-4">
+                <div class="h-100 p-3 rounded-4 border ${path.recommended ? 'border-success border-3' : ''} bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0">${path.title}</h6>
+                        ${path.recommended ? '<span class="badge bg-success">Recommended</span>' : ''}
+                    </div>
+                    <p class="small text-muted mb-3">${path.description}</p>
+                    <button type="button" class="btn btn-outline-success btn-sm w-100" onclick="focusLearningPath('${path.id}')">${path.action}</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadBadges() {
+        const container = document.getElementById('badge-list');
+        const badges = DB.getStudentBadges(currentUser.id);
+
+        if (badges.length === 0) {
+            container.innerHTML = '<div class="col-12 text-muted">No badges earned yet. Start with a quiz or lesson.</div>';
+            return;
+        }
+
+        container.innerHTML = badges.map((badge) => `
+            <div class="col-6">
+                <div class="achievement-badge w-100" title="${badge.description}">
+                    <span>${badge.icon}</span>
+                    <small>${badge.label}</small>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadClassLeaderboard() {
+        const tbody = document.getElementById('class-leaderboard-list');
+        const leaderboard = DB.getLeaderboard({ gradeLevel: currentUser.gradeLevel }).slice(0, 5);
+
+        if (leaderboard.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No classmates found yet</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = leaderboard.map((student, index) => `
+            <tr>
+                <td><strong>#${index + 1}</strong></td>
+                <td>${student.avatar} ${student.name}</td>
+                <td>${student.xp}</td>
+                <td>Level ${student.level}</td>
+            </tr>
+        `).join('');
+    }
+
+    function focusLearningPath(pathId) {
+        const labels = {
+            guided: 'Guided Practice',
+            challenge: 'Challenge Quest',
+            independent: 'Independent Explorer'
+        };
+
+        Swal.fire({
+            icon: 'info',
+            title: labels[pathId] || 'Learning Path',
+            text: 'Use the materials and assessments above to continue your selected path.'
+        });
     }
 
     function startAssessment(assessmentId) {
@@ -713,9 +837,6 @@
         });
     }
 
-    function scrollToSection(id) {
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
 </script>
 
 </body>

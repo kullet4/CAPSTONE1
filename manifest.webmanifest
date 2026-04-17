@@ -1,0 +1,19 @@
+{
+  "name": "QuizKo eLMS",
+  "short_name": "QuizKo",
+  "description": "Offline-first SDT-based e-LMS for primary learners.",
+  "start_url": "login.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "assets/quizko-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

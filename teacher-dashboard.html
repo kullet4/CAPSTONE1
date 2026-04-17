@@ -4,56 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard - QuizKo eLMS</title>
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="manifest" href="manifest.webmanifest">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
     <style>
-        .navbar { background: linear-gradient(135deg, #0d6efd 0%, #0061ff 100%) !important; }
         .card-header { background: linear-gradient(135deg, #0d6efd 0%, #0061ff 100%) !important; }
         .btn-primary { background: linear-gradient(135deg, #0d6efd 0%, #0061ff 100%) !important; border: none; }
         .badge-info { background: #0d6efd; }
         .progress-bar { background: #0d6efd !important; }
+        .dashboard-sidebar { background: linear-gradient(180deg, #0d6efd 0%, #0061ff 100%); }
+        .dashboard-brand { color: #fff; }
     </style>
 </head>
-<body>
+<body id="top">
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="bi bi-mortarboard"></i> QuizKo</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="scrollToSection('assessments')"><i class="bi bi-clipboard-check"></i> Assessments</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="scrollToSection('students')"><i class="bi bi-people"></i> Students</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="scrollToSection('materials')"><i class="bi bi-book"></i> Materials</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> <span id="user-name"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="login.html">Logout</a></li>
-                    </ul>
-                </li>
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;">
+            <a class="dashboard-brand" href="#top"><i class="bi bi-mortarboard"></i> QuizKo</a>
+            <button class="sidebar-hamburger" title="Toggle sidebar"></button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="nav-link active" aria-current="page" href="#top"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a class="nav-link" href="#pulse"><i class="bi bi-broadcast"></i> Live Pulse</a>
+            <a class="nav-link" href="#assessments"><i class="bi bi-clipboard-check"></i> Assessments</a>
+            <a class="nav-link" href="#students"><i class="bi bi-people"></i> Students</a>
+            <a class="nav-link" href="#materials"><i class="bi bi-book"></i> Materials</a>
+        </nav>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-user dropdown">
+            <a class="dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span><i class="bi bi-person-circle"></i> <span id="user-name"></span></span>
+                <i class="bi bi-chevron-down small"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="login.html">Logout</a></li>
             </ul>
         </div>
-    </div>
-</nav>
+    </aside>
 
 <!-- MAIN CONTENT -->
-<div class="main-content">
+<div class="dashboard-content main-content">
     <div class="container-fluid">
 
         <!-- HEADER -->
@@ -89,6 +87,47 @@
                 </div>
             </div>
         </div>
+
+        <!-- LIVE CLASS PULSE -->
+        <section id="pulse" class="mb-4 animate-slide">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-broadcast"></i> Live Class Pulse</h5>
+                    <span class="badge bg-light text-dark" id="pulse-last-updated">Waiting for data...</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="p-3 rounded-4 bg-primary bg-opacity-10 h-100">
+                                <h6 class="fw-bold mb-2">Instructional Snapshot</h6>
+                                <ul class="list-unstyled mb-0 small" id="teacher-snapshot-list">
+                                    <li>Loading class insights...</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Class</th>
+                                            <th>XP</th>
+                                            <th>Level</th>
+                                            <th>Avg Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leaderboard-list">
+                                        <tr><td colspan="5" class="text-center text-muted py-3">Waiting for live learner data...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2" id="class-summaries"></div>
+                </div>
+            </div>
+        </section>
 
         <!-- ASSESSMENTS SECTION -->
         <section id="assessments" class="mb-4 animate-slide">
@@ -454,32 +493,36 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="js/data.js"></script>
+<script src="js/app-shell.js"></script>
 <script src="js/firebase-db.js"></script>
+<script src="js/dashboard-nav.js"></script>
 <script>
     let currentUser;
     let questionCount = 1;
+    let teacherRefreshTimer = null;
 
     // Initialize dashboard
     document.addEventListener('DOMContentLoaded', () => {
-        checkAuth();
-        loadDashboardData();
+        if (checkAuth()) {
+            loadDashboardData();
+        }
     });
 
     function checkAuth() {
-        const user = JSON.parse(localStorage.getItem('elms_current_user') || 'null');
+        const user = window.QuizKoApp ? QuizKoApp.requireRole(['teacher']) : JSON.parse(localStorage.getItem('elms_current_user') || 'null');
         if (!user || user.role !== 'teacher') {
-            window.location.href = 'login.html';
-            return;
+            return false;
         }
         currentUser = user;
         document.getElementById('user-name').innerText = user.name;
+        return true;
     }
 
     function loadDashboardData() {
         // Get all classes where this teacher is assigned
         const myClasses = DB.getClassesByTeacher(currentUser.id);
         const myAssessments = DB.getAssessmentsByTeacher(currentUser.id);
-        const templates = DB.getTemplateAssessments();
+        const templates = DB.getTemplateAssessments().filter(template => !template.gradeLevel || myClasses.some(classItem => classItem.gradeLevel === template.gradeLevel));
         
         // Get total students across all teacher's classes
         let totalStudents = 0;
@@ -498,12 +541,87 @@
         loadStudentsList(myClasses);
 
         // Load materials for this teacher
-        const materials = DB.getAllMaterials().filter(m => m.createdBy === currentUser.id);
+        const materials = DB.getTeacherMaterials(currentUser.id);
         loadMaterialsList(materials);
 
         // Populate dropdowns
         populateTemplateDropdown(templates);
         populateClassDropdown(myClasses);
+        loadClassPulse(myClasses, totalStudents);
+
+        if (!teacherRefreshTimer) {
+            teacherRefreshTimer = setInterval(() => {
+                if (currentUser) {
+                    loadDashboardData();
+                }
+            }, 15000);
+        }
+    }
+
+    function loadClassPulse(myClasses, totalStudents) {
+        const pulseStamp = document.getElementById('pulse-last-updated');
+        pulseStamp.innerText = `Updated ${new Date().toLocaleTimeString()}`;
+
+        const snapshotList = document.getElementById('teacher-snapshot-list');
+        const summariesContainer = document.getElementById('class-summaries');
+        const leaderboardBody = document.getElementById('leaderboard-list');
+        const classSummaries = DB.getTeacherClassSummary(currentUser.id);
+        const classIds = myClasses.map(classItem => classItem.id);
+        const leaderboard = DB.getLeaderboard().filter(student => classIds.some(classId => {
+            const classData = DB.getClass(classId);
+            return classData && classData.studentIds && classData.studentIds.includes(student.id);
+        })).slice(0, 5);
+
+        if (classSummaries.length === 0) {
+            snapshotList.innerHTML = '<li>No classes assigned yet.</li>';
+            summariesContainer.innerHTML = '';
+            leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Assign a class to see live learner data.</td></tr>';
+            return;
+        }
+
+        const totalAverage = classSummaries.reduce((sum, item) => sum + Number(item.averageScore || 0), 0) / classSummaries.length;
+        const bestClass = [...classSummaries].sort((a, b) => b.averageScore - a.averageScore)[0];
+        const supportClass = [...classSummaries].sort((a, b) => a.averageScore - b.averageScore)[0];
+
+        snapshotList.innerHTML = `
+            <li><strong>${classSummaries.length}</strong> active class${classSummaries.length > 1 ? 'es' : ''}</li>
+            <li><strong>${totalStudents}</strong> learners monitored today</li>
+            <li><strong>${Math.round(totalAverage || 0)}%</strong> average class mastery</li>
+            <li>Top momentum: <strong>${bestClass ? bestClass.name : 'N/A'}</strong></li>
+            <li>Needs intervention: <strong>${supportClass ? supportClass.name : 'N/A'}</strong></li>
+        `;
+
+        summariesContainer.innerHTML = classSummaries.map(classItem => `
+            <div class="col-md-4">
+                <div class="p-3 rounded-4 border h-100 bg-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="fw-bold">${classItem.code || classItem.name}</div>
+                            <small class="text-muted">${classItem.name}</small>
+                        </div>
+                        <span class="badge ${classItem.classroomMood === 'Thriving' ? 'bg-success' : classItem.classroomMood === 'Growing' ? 'bg-info' : 'bg-warning'}">${classItem.classroomMood}</span>
+                    </div>
+                    <div class="small mb-1">Students: <strong>${classItem.studentCount}</strong></div>
+                    <div class="small mb-1">Average score: <strong>${Math.round(classItem.averageScore || 0)}%</strong></div>
+                    <div class="small">Top learner: <strong>${classItem.topStudent ? classItem.topStudent.name : 'None yet'}</strong></div>
+                </div>
+            </div>
+        `).join('');
+
+        if (leaderboard.length === 0) {
+            leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No progress data available yet</td></tr>';
+            return;
+        }
+
+        leaderboardBody.innerHTML = leaderboard.map((student, index) => `
+            <tr>
+                <td><strong>${index + 1}. ${student.name}</strong></td>
+                <td>${myClasses.find(classItem => classItem.studentIds && classItem.studentIds.includes(student.id))?.name || 'Assigned class'}</td>
+                <td>${student.xp}</td>
+                <td>Level ${student.level}</td>
+                <td>${Math.round(student.averageScore || 0)}%</td>
+            </tr>
+        `).join('');
     }
 
     function loadMyAssessments(assessments) {
@@ -1027,9 +1145,6 @@
         });
     }
 
-    function scrollToSection(id) {
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
 </script>
 </body>
 </html>

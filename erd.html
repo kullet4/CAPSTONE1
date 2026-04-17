@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizKo eLMS ERD</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --panel: #ffffff;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --line: #d1d5db;
+            --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 30%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 24%),
+                linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+        }
+
+        .page {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 28px 18px 42px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #111827 0%, #374151 100%);
+            color: #fff;
+            border-radius: 24px;
+            padding: 26px 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 80ch;
+            color: rgba(255, 255, 255, 0.84);
+            line-height: 1.55;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .chip {
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+        }
+
+        .note {
+            margin: 14px 0 20px;
+            color: var(--muted);
+            font-size: 0.96rem;
+        }
+
+        .canvas {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(209, 213, 219, 0.9);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .erd {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px;
+            min-width: 1320px;
+        }
+
+        .entity {
+            border: 2px solid var(--accent, #8b5cf6);
+            border-radius: 14px;
+            background: var(--panel);
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+            align-self: start;
+        }
+
+        .entity .head {
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--accent, #8b5cf6);
+            background: color-mix(in srgb, var(--accent, #8b5cf6) 12%, white);
+        }
+
+        .entity table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .entity td {
+            border-top: 1px solid var(--line);
+            padding: 8px 10px;
+            vertical-align: top;
+        }
+
+        .entity td:first-child {
+            width: 34%;
+            color: #374151;
+            white-space: nowrap;
+        }
+
+        .entity td:nth-child(2) {
+            width: 46%;
+        }
+
+        .entity td:last-child {
+            width: 20%;
+            text-align: right;
+            color: #4b5563;
+            white-space: nowrap;
+        }
+
+        .label {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--line);
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+
+        .user { --accent: #d946ef; grid-column: 1 / span 2; }
+        .class { --accent: #22d3ee; grid-column: 3 / span 2; }
+        .material { --accent: #06b6d4; grid-column: 5 / span 2; }
+        .studentperf { --accent: #22c55e; grid-column: 7 / span 2; }
+        .policy { --accent: #a78bfa; grid-column: 9 / span 2; }
+        .enrollment { --accent: #f87171; grid-column: 11 / span 2; }
+        .assessment { --accent: #fb923c; grid-column: 1 / span 2; }
+        .question { --accent: #f59e0b; grid-column: 3 / span 2; }
+        .score { --accent: #14b8a6; grid-column: 5 / span 2; }
+        .attendance { --accent: #84cc16; grid-column: 7 / span 2; }
+        .completed { --accent: #38bdf8; grid-column: 9 / span 2; }
+
+        .relationships {
+            grid-column: 1 / span 12;
+            border-radius: 18px;
+            border: 1px solid rgba(209, 213, 219, 0.7);
+            background:
+                linear-gradient(90deg, transparent 24px, rgba(148, 163, 184, 0.06) 25px, transparent 26px),
+                linear-gradient(transparent 24px, rgba(148, 163, 184, 0.06) 25px, transparent 26px),
+                #fbfbfd;
+            background-size: 26px 26px;
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .relationship-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 14px;
+            min-height: 44px;
+            padding: 8px 6px;
+        }
+
+        .relationship-row .from,
+        .relationship-row .to {
+            min-width: 120px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1.5px solid var(--line);
+            background: #fff;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        .relationship-row .line {
+            height: 2px;
+            background: #94a3b8;
+            position: relative;
+        }
+
+        .relationship-row .line::before,
+        .relationship-row .line::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+
+        .relationship-row .line::before {
+            left: 0;
+        }
+
+        .relationship-row .line::after {
+            right: 0;
+        }
+
+        .relationship-row .label {
+            width: auto;
+            height: auto;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: #475569;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--line);
+            font-size: 0.9rem;
+        }
+
+        .swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color);
+        }
+
+        @media (max-width: 1400px) {
+            .canvas {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="hero">
+            <h1>QuizKo eLMS ERD</h1>
+            <p>
+                This version is aligned to the actual LocalStorage-based structure in <strong>js/data.js</strong>.
+                It is best described as a conceptual ERD, because some relationships are stored as ID arrays rather than formal SQL foreign-key tables.
+            </p>
+            <div class="chips">
+                <div class="chip">Conceptual ERD</div>
+                <div class="chip">Code-aligned</div>
+                <div class="chip">Defense-ready</div>
+                <div class="chip">Slide-friendly</div>
+            </div>
+        </div>
+
+        <div class="note">
+            Recommended talking point: “This diagram shows the logical data model of the prototype. The current implementation uses LocalStorage collections with ID references, and this ERD shows how those collections relate.”
+        </div>
+
+        <div class="canvas">
+            <div class="erd">
+                <div class="entity user">
+                    <div class="head">USER</div>
+                    <table>
+                        <tr><td>string</td><td>id</td><td>PK</td></tr>
+                        <tr><td>string</td><td>email</td><td>UK</td></tr>
+                        <tr><td>string</td><td>name</td><td></td></tr>
+                        <tr><td>string</td><td>password</td><td></td></tr>
+                        <tr><td>string</td><td>role</td><td></td></tr>
+                        <tr><td>int</td><td>gradeLevel</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity class">
+                    <div class="head">CLASS</div>
+                    <table>
+                        <tr><td>string</td><td>id</td><td>PK</td></tr>
+                        <tr><td>string</td><td>code</td><td>UK</td></tr>
+                        <tr><td>string</td><td>name</td><td></td></tr>
+                        <tr><td>int</td><td>gradeLevel</td><td></td></tr>
+                        <tr><td>string</td><td>teacherId</td><td>FK</td></tr>
+                        <tr><td>array</td><td>studentIds</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity material">
+                    <div class="head">MATERIAL</div>
+                    <table>
+                        <tr><td>string</td><td>id</td><td>PK</td></tr>
+                        <tr><td>string</td><td>title</td><td></td></tr>
+                        <tr><td>string</td><td>subject</td><td></td></tr>
+                        <tr><td>int</td><td>gradeLevel</td><td></td></tr>
+                        <tr><td>string</td><td>createdBy</td><td>FK</td></tr>
+                        <tr><td>string</td><td>type</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity studentperf">
+                    <div class="head">STUDENT_PERFORMANCE</div>
+                    <table>
+                        <tr><td>string</td><td>studentId</td><td>PK/FK</td></tr>
+                        <tr><td>int</td><td>xp</td><td></td></tr>
+                        <tr><td>int</td><td>level</td><td></td></tr>
+                        <tr><td>array</td><td>assessmentScores</td><td></td></tr>
+                        <tr><td>object</td><td>attendance</td><td></td></tr>
+                        <tr><td>array</td><td>completedAssessments</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity policy">
+                    <div class="head">POLICY</div>
+                    <table>
+                        <tr><td>object</td><td>general</td><td></td></tr>
+                        <tr><td>object</td><td>assessmentPolicy</td><td></td></tr>
+                        <tr><td>object</td><td>attendancePolicy</td><td></td></tr>
+                        <tr><td>int</td><td>passingScore</td><td></td></tr>
+                        <tr><td>int</td><td>maxAttempts</td><td></td></tr>
+                        <tr><td>int</td><td>requiredAttendanceRate</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity enrollment">
+                    <div class="head">CLASS_STUDENT</div>
+                    <table>
+                        <tr><td>string</td><td>classId</td><td>FK</td></tr>
+                        <tr><td>string</td><td>studentId</td><td>FK</td></tr>
+                        <tr><td colspan="3">Conceptual bridge for many-to-many enrollment</td></tr>
+                    </table>
+                </div>
+
+                <div class="relationships">
+                    <div class="relationship-row">
+                        <div class="from">USER</div>
+                        <div class="line"></div>
+                        <div class="to">CLASS</div>
+                        <div class="label">teaches</div>
+                    </div>
+                    <div class="relationship-row">
+                        <div class="from">USER</div>
+                        <div class="line"></div>
+                        <div class="to">ASSESSMENT</div>
+                        <div class="label">creates</div>
+                    </div>
+                    <div class="relationship-row">
+                        <div class="from">USER</div>
+                        <div class="line"></div>
+                        <div class="to">MATERIAL</div>
+                        <div class="label">uploads</div>
+                    </div>
+                    <div class="relationship-row">
+                        <div class="from">USER</div>
+                        <div class="line"></div>
+                        <div class="to">STUDENT_PERFORMANCE</div>
+                        <div class="label">owns</div>
+                    </div>
+                    <div class="relationship-row">
+                        <div class="from">ASSESSMENT</div>
+                        <div class="line"></div>
+                        <div class="to">QUESTION</div>
+                        <div class="label">contains</div>
+                    </div>
+                    <div class="relationship-row">
+                        <div class="from">CLASS</div>
+                        <div class="line"></div>
+                        <div class="to">CLASS_STUDENT</div>
+                        <div class="label">enrollment</div>
+                    </div>
+                    <div class="relationship-row">
+                        <div class="from">POLICY</div>
+                        <div class="line"></div>
+                        <div class="to">ASSESSMENT</div>
+                        <div class="label">controls rules</div>
+                    </div>
+                </div>
+
+                <div class="entity assessment">
+                    <div class="head">ASSESSMENT</div>
+                    <table>
+                        <tr><td>string</td><td>id</td><td>PK</td></tr>
+                        <tr><td>string</td><td>title</td><td></td></tr>
+                        <tr><td>string</td><td>description</td><td></td></tr>
+                        <tr><td>string</td><td>createdBy</td><td>FK</td></tr>
+                        <tr><td>int</td><td>gradeLevel</td><td></td></tr>
+                        <tr><td>boolean</td><td>isTemplate</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity question">
+                    <div class="head">QUESTION</div>
+                    <table>
+                        <tr><td>int</td><td>id</td><td>PK</td></tr>
+                        <tr><td>string</td><td>assessmentId</td><td>FK</td></tr>
+                        <tr><td>string</td><td>question</td><td></td></tr>
+                        <tr><td>array</td><td>options</td><td></td></tr>
+                        <tr><td>int</td><td>correctIndex</td><td></td></tr>
+                        <tr><td>string</td><td>difficulty</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity score">
+                    <div class="head">ASSESSMENT_SCORE</div>
+                    <table>
+                        <tr><td>string</td><td>assessmentId</td><td>FK</td></tr>
+                        <tr><td>string</td><td>studentId</td><td>FK</td></tr>
+                        <tr><td>number</td><td>score</td><td></td></tr>
+                        <tr><td>number</td><td>maxScore</td><td></td></tr>
+                        <tr><td>number</td><td>percentage</td><td></td></tr>
+                        <tr><td>string</td><td>completedAt</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity attendance">
+                    <div class="head">ATTENDANCE</div>
+                    <table>
+                        <tr><td>string</td><td>studentId</td><td>FK</td></tr>
+                        <tr><td>object</td><td>attendance</td><td></td></tr>
+                        <tr><td>string</td><td>status</td><td></td></tr>
+                        <tr><td>string</td><td>date</td><td></td></tr>
+                        <tr><td>int</td><td>present / absent / late</td><td></td></tr>
+                    </table>
+                </div>
+
+                <div class="entity completed">
+                    <div class="head">COMPLETED_ASSESSMENT</div>
+                    <table>
+                        <tr><td>string</td><td>studentId</td><td>FK</td></tr>
+                        <tr><td>string</td><td>assessmentId</td><td>FK</td></tr>
+                        <tr><td>string</td><td>completedAt</td><td></td></tr>
+                        <tr><td colspan="3">Logical record for completed assessments</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="legend">
+                <span><i class="swatch" style="--color:#d946ef"></i> User role data</span>
+                <span><i class="swatch" style="--color:#22d3ee"></i> Class and enrollment</span>
+                <span><i class="swatch" style="--color:#f59e0b"></i> Assessments and questions</span>
+                <span><i class="swatch" style="--color:#22c55e"></i> Student progress</span>
+                <span><i class="swatch" style="--color:#a78bfa"></i> Policies</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

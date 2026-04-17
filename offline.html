@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - QuizKo eLMS</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%);
+            padding: 2rem;
+        }
+        .offline-card {
+            max-width: 540px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+            text-align: center;
+        }
+        .offline-icon {
+            font-size: 4rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <main class="offline-card">
+        <div class="offline-icon">📶</div>
+        <h1>You're offline</h1>
+        <p>The QuizKo eLMS prototype is built to keep working with cached pages and local storage whenever connectivity is unstable.</p>
+        <p>You can return to the login page or reopen the app once the connection is restored.</p>
+        <a class="btn btn-primary" href="login.html">Go to Login</a>
+    </main>
+</body>
+</html>

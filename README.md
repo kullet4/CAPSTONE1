@@ -11,7 +11,7 @@ An interactive web-based learning platform designed for Philippine public elemen
 ## 📋 Project Overview
 
 QuizKo eLMS is a comprehensive Learning Management System tailored for elementary schools, supporting three main user roles:
-- **School Officials** - Administrative management and policy setting
+- **Admins** - Administrative management and policy setting
 - **Teachers** - Content creation, assessment management, and student monitoring
 - **Students** - Learning engagement, self-assessment, and progress tracking
 
@@ -39,7 +39,7 @@ QuizKo eLMS is a comprehensive Learning Management System tailored for elementar
 
 ### Demo Credentials
 
-**School Official:**
+**Admin:**
 ```
 Email: admin@school.com
 Password: admin123
@@ -56,7 +56,6 @@ Password: teacher123
 Email: student01@school.com
 Password: student123
 ```
-
 ---
 
 ## 📁 Project Structure
@@ -65,24 +64,27 @@ Password: student123
 CAPSTONE1/
 ├── index.html                 # Main entry point (redirects to login)
 ├── login.html                 # Login & authentication page
-├── admin-dashboard.html       # School official dashboard
+├── admin-dashboard.html       # Admin dashboard
 ├── teacher-dashboard.html     # Teacher dashboard
 ├── student-dashboard.html     # Student dashboard
+├── SYSTEM_TESTING_ISO25010.md # System testing and ISO 25010 evaluation
+├── manifest.webmanifest       # PWA manifest
+├── offline.html               # Offline fallback page
+├── service-worker.js          # Offline caching strategy
+├── assets/
+│   └── quizko-icon.svg        # App icon
 ├── css/
-│   ├── designOne.css         # Original design styles
-│   └── global.css            # Global responsive styles
-├── js/
-│   ├── functionsOne.js       # Original functionality
-│   └── data.js               # Database management system
-├── assets/                   # Additional resources
-└── README.md                 # Documentation
+│   └── global.css             # Shared responsive styles
+└── js/
+    ├── app-shell.js           # Shared auth, role normalization, service worker bootstrap
+    ├── dashboard-nav.js       # Section-aware dashboard navigation
+    ├── data.js                # LocalStorage database management
+    └── firebase-db.js         # Firebase sync and demo account provisioning
 ```
 
 ---
 
-## 👥 User Roles & Features
-
-### 🏛️ **School Officials**
+### 🏛️ **Admin**
 **Dashboard:** `admin-dashboard.html`
 
 **Capabilities:**
@@ -91,17 +93,8 @@ CAPSTONE1/
 - 📚 Manage learning materials
 - 📜 Configure eLMS policies
 - 📊 View system-wide statistics
-
-**Key Sections:**
-1. **Student Management** - Add, edit, or remove students
-2. **Teacher Management** - Manage teaching staff
-3. **Learning Materials** - Upload and organize educational content
 4. **eLMS Policies** - Set passing scores, assessment rules, attendance policies
 
----
-
-### 👨‍🏫 **Teachers**
-**Dashboard:** `teacher-dashboard.html`
 
 **Capabilities:**
 - 📝 Create custom assessments with questions
@@ -264,7 +257,7 @@ CAPSTONE1/
 
 ## 📖 How to Use
 
-### For School Officials
+### For Admin
 1. Login with admin credentials
 2. Navigate to **Student Management** to add students
 3. Navigate to **Teacher Management** to add teachers
@@ -286,6 +279,17 @@ CAPSTONE1/
 4. Check **Your Grades** section for feedback
 5. Browse **Learning Materials** for study resources
 6. Monitor XP progress in the main card at the top
+
+---
+
+## 🧪 System Testing & ISO 25010 Evaluation
+
+The project includes a dedicated evaluation guide for the defense panel:
+- **[SYSTEM_TESTING_ISO25010.md](SYSTEM_TESTING_ISO25010.md)** - system test cases, Functional Suitability checks, and Performance Efficiency evaluation notes
+
+The evaluation focus is on:
+- **Functional Suitability (FUNC SUIT)** - whether login, role access, assessments, materials, progress tracking, and offline recovery work as intended
+- **Performance Efficiency (PERF EFF)** - whether the prototype stays lightweight, responsive, and usable on constrained or intermittent connections
 
 ---
 
@@ -349,7 +353,7 @@ DB.recordAttendance(studentId, status) // Mark attendance
 ### Styling Variables (global.css)
 ```css
 --primary: #667eea              /* Main brand color */
---official-color: #f59e0b       /* Admin color */
+--admin-color: #f59e0b       /* Admin color */
 --teacher-color: #0d6efd        /* Teacher color */
 --student-color: #22c55e        /* Student color */
 --danger: #ef4444               /* Error color */
